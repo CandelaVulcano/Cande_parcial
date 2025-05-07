@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: SecuroServ
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - PORT=${PORT}
+      - NODE_ENV=${NODE_ENV}
+    restart: unless-stopped 
