@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: servidor-docker/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - SECRET_KEY=ClaveSecretaParaProduccion
+      - DATABASE_URL=sqlite:///app.db
+      - FLASK_ENV=production
+    volumes:
+      - ../:/app
+      - db-data:/app/instance
+
+volumes:
+  db-data:
