@@ -1,4 +1,4 @@
-from models.alumno import Alumno
+from app.models.alumno import Alumno
 
 class AlumnoRepository:
     def __init__(self):

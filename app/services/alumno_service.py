@@ -1,5 +1,5 @@
-from repositories.alumno_repositorio import AlumnoRepository
-from models.alumno import Alumno
+from app.repositories.alumno_repositorio import AlumnoRepository
+from app.models.alumno import Alumno
 
 class AlumnoService:
     def __init__(self, repo: AlumnoRepository):

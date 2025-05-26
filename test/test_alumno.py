@@ -1,5 +1,5 @@
 import unittest
-from models.alumno import Alumno
+from app.models.alumno import Alumno
 
 class TestAlumno(unittest.TestCase):
     def test_creacion_alumno(self):

@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from app.models.facultad import Facultad
 from app.services.facultad_service import FacultadService
-from src.auth import auth
+from ..auth import auth  # Cambiado de src.auth a importación relativa
 
 facultad_bp = Blueprint('facultad', __name__, url_prefix='/api/facultades')
 

@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from src.config import Config
 from src.auth import auth
 from app import db
-from src.routes import routes
+from src import routes
 import sys
 import os
 
@@ -21,7 +21,7 @@ def create_app(config_class=Config):
     @auth.login_required
     def index():
         return jsonify({
-            "message": f"¡Bienvenido al sistema académico, {auth.current_user().username}!",
+            "message": f"¡Bienvenido al sistema académico, {auth.current_user.username}!",
             "status": "active"
         })
     
@@ -32,11 +32,11 @@ def create_app(config_class=Config):
         return jsonify({
             "status": "ok", 
             "message": "Conexión establecida correctamente",
-            "user": auth.current_user().username
+            "user": auth.current_user.username
         })
     
     # Registrar rutas
-    for blueprint in routes:
+    for blueprint in routes.routes:
         app.register_blueprint(blueprint)
     
     # Crear base de datos si no existe
