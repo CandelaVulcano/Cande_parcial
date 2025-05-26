@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: servidor-docker/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - SECRET_KEY=ClaveSecretaParaProduccion
+      - DATABASE_URL=sqlite:///app.db
+      - FLASK_ENV=production
+      - PYTHONPATH=/app
+    volumes:
+      - ../:/app
+      - db-data:/app/instance
+    # Usar el nuevo comando más simple
+    command: gunicorn --bind 0.0.0.0:5000 servidor-docker.app:app
+
+volumes:
+  db-data:
