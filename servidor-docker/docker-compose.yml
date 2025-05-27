@@ -1,22 +1,21 @@
-version: '3'
-
-services:
-  api:
-    build:
-      context: ..
-      dockerfile: servidor-docker/Dockerfile
+services:    
+  postgresql:
+    container_name: postgresql-servidor  # Nombre del contenedor en Docker
+    image: postgres:15.4-bullseye        # Imagen de PostgreSQL que se descarga
     ports:
-      - "5000:5000"
+      - "5432:5432"                      # Mapea el puerto 5432 del host al contenedor
+    networks:
+      - mired                            # Nombre de la red Docker (debe coincidir con la red externa)
     environment:
-      - SECRET_KEY=ClaveSecretaParaProduccion
-      - DATABASE_URL=sqlite:///app.db
-      - FLASK_ENV=production
-      - PYTHONPATH=/app
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}  # Variables de entorno (no modificar, se toman del entorno)
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - ../:/app
-      - db-data:/app/instance
-    # Usar el nuevo comando más simple
-    command: gunicorn --bind 0.0.0.0:5000 servidor-docker.app:app
+      - ./data:/var/lib/postgresql/data           # Persistencia de datos
+      - ./sql:/docker-entrypoint-initdb.d         # Scripts SQL de inicialización
+    restart: always                                # Reiniciar automáticamente si se cae
 
-volumes:
-  db-data:
+networks:
+  mired:           # Reemplazar 'mired' por el nombre real de tu red Docker
+    external: true # Indica que la red ya existe y es externa
