@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from app import db
+from .alumno_grupo import alumno_grupo
 
 @dataclass(init=False, repr=True, eq=True)
-class TipoDedicacion(db.Model):
-    __tablename__ = 'tipos_dedicacion'
+class Grupo(db.Model):
+    __tablename__ = 'grupos'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(100), nullable=False)
-    observacion = db.Column(db.String(200), nullable=True)
-    cargos = db.relationship('Cargo', back_populates='tipo_dedicacion', lazy=True)
+    alumnos = db.relationship('Alumno', secondary=alumno_grupo, back_populates='grupos')
