@@ -18,4 +18,4 @@ class Facultad(db.Model):
     universidad_id = db.Column(db.Integer, db.ForeignKey('universidades.id'), nullable=False)
     universidad = db.relationship('Universidad', back_populates='facultades')
     autoridades = db.relationship('Autoridad', back_populates='facultad', lazy=True)
-    
+    departamentos = db.relationship('Departamento', back_populates='facultad', lazy=True)

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from app import db
-from .alumno_grupo import alumno_grupo
+from app.models.alumno_grupo import alumno_grupo
 
 @dataclass(init=False, repr=True, eq=True)
 class Grupo(db.Model):
