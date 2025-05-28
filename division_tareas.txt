@@ -2,5 +2,6 @@ BASE DE DATOS:
     Testing: Martínez Oldani Jimena y Vulcano Candela
     Service: Bettiol Giuliana y Alonso Adriel
     Models: Sanchez Juan Ignacio y Velazco Franco
+    Respositories: Sanchez Juan Ignacio y Velazco Franco
 CONECTAR RED: Martínez Oldani Jimena
 Conectar DOCKER: Alejandro Ruíz
