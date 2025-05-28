@@ -1,0 +1,69 @@
+# Distribución de Tareas para Proyecto de Sistema Académico
+
+## Persona 1: Arquitecto del Sistema
+**Áreas de trabajo:**
+- Configuración general del entorno de desarrollo
+- Diseño de la arquitectura del sistema
+- Estructura de carpetas y organización del código
+- Configuración del sistema de contenedores para despliegue
+- Implementación del módulo principal de la aplicación
+- Configuración de la conexión a la base de datos
+- Gestión de dependencias del proyecto
+
+## Persona 2: Desarrollador Backend - Modelos Base
+**Áreas de trabajo:**
+- Diseño e implementación de la estructura base de datos
+- Desarrollo de modelos fundamentales del sistema académico
+- Creación de entidades relacionadas con la estructura universitaria
+- Definición de relaciones entre los modelos principales
+- Implementación de configuraciones para migraciones de base de datos
+- Validación de integridad estructural del modelo de datos
+
+## Persona 3: Desarrollador Backend - Modelos Académicos
+**Áreas de trabajo:**
+- Implementación de modelos relacionados con la gestión académica
+- Desarrollo de entidades para materias, planes y especialidades
+- Configuración de relaciones entre estos modelos académicos
+- Implementación de lógica específica de entidades académicas
+- Definición de reglas de negocio para la oferta formativa
+- Validación de requisitos académicos y prerrequisitos
+
+## Persona 4: Desarrollador Backend - Modelos de Personas
+**Áreas de trabajo:**
+- Desarrollo de modelos relacionados con personas en el sistema
+- Implementación de entidades para alumnos y autoridades
+- Gestión de tipos de documentos y validaciones de identidad
+- Desarrollo de relaciones entre personas y grupos/materias
+- Implementación de modelos para cargos y categorías de personal
+- Gestión de datos personales y privacidad
+
+## Persona 5: Desarrollador Backend - Servicios y Repositorios
+**Áreas de trabajo:**
+- Desarrollo de la capa de servicios del sistema
+- Implementación de repositorios para acceso a datos
+- Desarrollo de la lógica de negocio para servicios principales
+- Implementación de patrones de diseño para acceso a datos
+- Gestión de transacciones y operaciones complejas
+- Implementación de consultas optimizadas a la base de datos
+- Validación de reglas de negocio en la capa de servicios
+
+## Persona 6: Desarrollador APIs y Autenticación
+**Áreas de trabajo:**
+- Diseño e implementación de APIs REST
+- Desarrollo del sistema de autenticación y autorización
+- Configuración de seguridad y protección de endpoints
+- Implementación de rutas para acceso a módulos del sistema
+- Gestión de sesiones y tokens de autenticación
+- Desarrollo de middleware para validación de solicitudes
+- Implementación de control de acceso basado en roles
+
+## Persona 7: Tester e Integrador
+**Áreas de trabajo:**
+- Diseño de estrategias de pruebas unitarias e integración
+- Desarrollo de casos de prueba para todas las funcionalidades
+- Documentación técnica y de usuario del sistema
+- Integración de los diferentes componentes desarrollados
+- Validación del funcionamiento completo del sistema
+- Gestión de calidad y retroalimentación sobre desarrollo
+- Preparación de entorno de pruebas y datos de prueba
+- Verificación de cumplimiento de requisitos
