@@ -37,5 +37,3 @@ class FacultadService:
         if not facultad:
             return None
         return facultad
-    
-        
