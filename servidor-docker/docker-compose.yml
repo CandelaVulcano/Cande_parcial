@@ -1,21 +1,31 @@
 services:    
   postgresql:
-    container_name: postgresql-servidor  # Nombre del contenedor en Docker
-    image: postgres:15.4-bullseye        # Imagen de PostgreSQL que se descarga
+    container_name: postgresql-servidor
+    image: postgres:16-bullseye
     ports:
-      - "5432:5432"                      # Mapea el puerto 5432 del host al contenedor
+      - "5432:5432"
     networks:
-      - mired                            # Nombre de la red Docker (debe coincidir con la red externa)
+      - mired
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}  # Variables de entorno (no modificar, se toman del entorno)
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - PGDATA=/var/lib/postgresql/data/pgdata
+      POSTGRES_PASSWORD: alejandro2004
+      POSTGRES_DB: prueba_1
+      POSTGRES_USER: postgress
+      #PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - ./data:/var/lib/postgresql/data           # Persistencia de datos
-      - ./sql:/docker-entrypoint-initdb.d         # Scripts SQL de inicialización
-    restart: always                                # Reiniciar automáticamente si se cae
+      - ./data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    restart: always                                
+  app:
+    build: .
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://usuario:contraseña@db:5432/basededatos
+volumes:
+  pgdata:
 
 networks:
-  mired:           # Reemplazar 'mired' por el nombre real de tu red Docker
-    external: true # Indica que la red ya existe y es externa
+  mired:
+    external: true
