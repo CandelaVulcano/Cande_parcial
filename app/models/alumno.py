@@ -16,3 +16,6 @@ class Alumno(db.Model):
     fecha_ingreso = db.Column(db.String(20), nullable=False)
     tipo_documento = db.relationship('TipoDocumento', back_populates='alumnos')
     grupos = db.relationship('Grupo', secondary=alumno_grupo, back_populates='alumnos')
+
+    #TODO: relacionar con tipo de documento
+    #TODO: aplicar ley de demeter

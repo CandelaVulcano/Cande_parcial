@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .justificar{
+            text-align: justify;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificado de Alumno Regular: {{alumno.apellido}} {{alumno.nombre}}</title>
+</head>
+<body>
+    <img src="/static/img/logo-ministerio.png" alt="Logo Ministerio de Educación" style="width: 100px; height: auto;">
+    <img src="/static/img/logo-utm.png" alt="Logo UTM" style="width: 100px; height: auto; float: right;">
+    <p class="justificar">Por la presente se hace constar que {{alumno.apellido}} {{alumno.nombre}},
+    – DNI: {{alumno.nro_documento}} - LEGAJO Nº: , es
+    Estudiante Regular de la especialidad Ingeniería en Sistemas de
+    Información que se dicta en la Facultad Regional San Rafael de la
+    Universidad Tecnológica Nacional.
+    A solicitud del interesado y a los fines de ser presentado ante
+    quien corresponda, se le extiende el presente certificado, sin
+    enmiendas ni raspaduras, en {{facultad.ciudad}}. el {{datetime}}.-</p>
+</body>
+</html>

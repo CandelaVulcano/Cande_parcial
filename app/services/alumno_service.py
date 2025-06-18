@@ -1,5 +1,7 @@
 from app.models import Alumno
 from app.repositories.alumno_repositorio import AlumnoRepository
+from app.services.facultad_service import FacultadService
+from datetime import datetime
 
 class AlumnoService:
    
@@ -37,3 +39,9 @@ class AlumnoService:
             return None
         return alumno
     
+    def generar_certificado_alumno_regular(id: int):
+        alumno = AlumnoRepository.buscar_por_id(id)
+        # TODO: relacionar alumno con facultad y especialidad
+        facultad = FacultadService.buscar_facultad(1)
+        fecha = datetime.now()
+        
