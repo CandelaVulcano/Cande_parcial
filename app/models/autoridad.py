@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from app import db
-from dataclasses import dataclass
-from app import db
+
 
 @dataclass(init=False, repr=True, eq=True)
 class Autoridad(db.Model):
@@ -11,5 +10,6 @@ class Autoridad(db.Model):
     cargo = db.Column(db.String(50), nullable=False)
     telefono = db.Column(db.String(20), nullable=True)
     email = db.Column(db.String(100), nullable=False)
-    facultad_id = db.Column(db.Integer, db.ForeignKey('facultades.id'), nullable=False)
+    facultad_id = db.Column(db.Integer, db.ForeignKey(
+        'facultades.id'), nullable=False)
     facultad = db.relationship('Facultad', back_populates='autoridades')
