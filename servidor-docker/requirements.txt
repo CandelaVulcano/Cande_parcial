@@ -10,3 +10,4 @@ Werkzeug==2.0.2
 python-odt-template==0.5.1
 docxtpl==0.20.0
 weasyprint==65.1
+markupsafe==3.0.2
