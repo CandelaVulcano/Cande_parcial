@@ -1,1 +1,1 @@
-from .certificado_resources import certificado_bp
+from .certificado_resource import certificado_bp
