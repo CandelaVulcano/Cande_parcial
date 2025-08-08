@@ -12,3 +12,4 @@ docxtpl==0.20.0
 weasyprint==65.1
 markupsafe==3.0.2
 Flask-hashids==1.0.3
+marshmallow==3.14.1
