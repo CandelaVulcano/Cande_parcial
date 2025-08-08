@@ -141,3 +141,11 @@ pyvenv.cfg
 
 # add migration files
 migrations/
+
+
+# Ignore virtual environments
+.venv/
+venv/
+# Ignore Python bytecode and cache directories
+__pycache__/
+*.pyc
