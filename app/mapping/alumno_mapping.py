@@ -6,3 +6,5 @@ class AlumnoMapping(Schema):
     id = fields.Int()
     nombre = fields.Str()
     apellido = fields.Str()
+
+    # Incompleto
