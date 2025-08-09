@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from app import db
+from flask_hashids import HashidMixmin
 
 
 @dataclass(init=False, repr=True, eq=True)
-class Autoridad(db.Model):
+class Autoridad(HashidMixmin, db.Model):
     __tablename__ = 'autoridades'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(100), nullable=False)
