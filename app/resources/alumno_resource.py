@@ -1,19 +1,55 @@
-from flask import Blueprint
+from flask import Blueprint, request, jsonify
 from app.services.alumno_service import AlumnoService
-from app.models.alumno import Alumno
 from app.mapping.alumno_mapping import AlumnoMapping
 
 alumno_bp = Blueprint('alumno', __name__)
 alumno_mapping = AlumnoMapping()
 
 
+# GET /alumnos - Obtener todos los alumnos
 @alumno_bp.route('/alumnos', methods=['GET'])
 def read_all():
     alumnos = AlumnoService.buscar_todos()
     return alumno_mapping.dump(alumnos, many=True), 200
 
 
+# GET /alumno/<id> - Obtener un alumno por ID
 @alumno_bp.route('/alumno/<int:id>', methods=['GET'])
 def read_by_id(id: int):
     alumno = AlumnoService.buscar_por_id(id)
+    if not alumno:
+        return jsonify({"error": "Alumno no encontrado"}), 404
     return alumno_mapping.dump(alumno), 200
+
+
+# POST /alumno - Crear un nuevo alumno
+@alumno_bp.route('/alumno', methods=['POST'])
+def create():
+    data = request.get_json()
+    try:
+        nuevo_alumno = AlumnoService.crear_alumno(data)
+        return alumno_mapping.dump(nuevo_alumno), 201
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+
+# PUT /alumno/<id> - Actualizar un alumno
+@alumno_bp.route('/alumno/<int:id>', methods=['PUT'])
+def update(id: int):
+    data = request.get_json()
+    try:
+        alumno_actualizado = AlumnoService.actualizar_alumno(id, data)
+        if not alumno_actualizado:
+            return jsonify({"error": "Alumno no encontrado"}), 404
+        return alumno_mapping.dump(alumno_actualizado), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+
+# DELETE /alumno/<id> - Eliminar un alumno
+@alumno_bp.route('/alumno/<int:id>', methods=['DELETE'])
+def delete(id: int):
+    eliminado = AlumnoService.borrar_alumno(id)
+    if not eliminado:
+        return jsonify({"error": "Alumno no encontrado"}), 404
+    return jsonify({"message": "Alumno eliminado"}), 200
