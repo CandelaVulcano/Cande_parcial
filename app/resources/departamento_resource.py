@@ -9,7 +9,7 @@ def read_all():
     departamentos = DepartamentoService.buscar_todos()
     return departamento_mapping.dump(departamentos, many=True), 200
 # GET /departamento/<id> - Obtener un departamento por ID
-@departamento_bp.route('/departamento/<int:id>', methods=['GET'])
+@departamento_bp.route('/departamento/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
     departamento = DepartamentoService.buscar_por_id(id)
     if not departamento:
@@ -25,7 +25,7 @@ def create():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 # PUT /departamento/<id> - Actualizar un departamento
-@departamento_bp.route('/departamento/<int:id>', methods=['PUT'])
+@departamento_bp.route('/departamento/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
     try:
@@ -36,7 +36,7 @@ def update(id: int):
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 # DELETE /departamento/<id> - Eliminar un departamento
-@departamento_bp.route('/departamento/<int:id>', methods=['DELETE'])
+@departamento_bp.route('/departamento/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = DepartamentoService.borrar_departamento(id)
     if not eliminado:

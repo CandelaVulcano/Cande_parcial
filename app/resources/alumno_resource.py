@@ -14,7 +14,7 @@ def read_all():
 
 
 # GET /alumno/<id> - Obtener un alumno por ID
-@alumno_bp.route('/alumno/<int:id>', methods=['GET'])
+@alumno_bp.route('/alumno/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
     alumno = AlumnoService.buscar_por_id(id)
     if not alumno:
@@ -34,7 +34,7 @@ def create():
 
 
 # PUT /alumno/<id> - Actualizar un alumno
-@alumno_bp.route('/alumno/<int:id>', methods=['PUT'])
+@alumno_bp.route('/alumno/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
     try:
@@ -47,7 +47,7 @@ def update(id: int):
 
 
 # DELETE /alumno/<id> - Eliminar un alumno
-@alumno_bp.route('/alumno/<int:id>', methods=['DELETE'])
+@alumno_bp.route('/alumno/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = AlumnoService.borrar_alumno(id)
     if not eliminado:

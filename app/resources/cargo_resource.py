@@ -14,7 +14,7 @@ def read_all():
 
 
 # GET /cargo/<id> - Obtener un cargo por ID
-@cargo_bp.route('/cargo/<int:id>', methods=['GET'])
+@cargo_bp.route('/cargo/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
     cargo = CargoService.buscar_por_id(id)
     if not cargo:
@@ -34,7 +34,7 @@ def create():
 
 
 # PUT /cargo/<id> - Actualizar un cargo
-@cargo_bp.route('/cargo/<int:id>', methods=['PUT'])
+@cargo_bp.route('/cargo/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
     try:
@@ -47,7 +47,7 @@ def update(id: int):
 
 
 # DELETE /cargo/<id> - Eliminar un cargo
-@cargo_bp.route('/cargo/<int:id>', methods=['DELETE'])
+@cargo_bp.route('/cargo/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = CargoService.borrar_cargo(id)
     if not eliminado:

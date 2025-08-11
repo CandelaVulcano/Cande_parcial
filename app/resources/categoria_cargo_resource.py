@@ -9,7 +9,7 @@ def read_all():
     categorias_cargo = CategoriaCargoService.buscar_todos()
     return categoria_cargo_mapping.dump(categorias_cargo, many=True), 200
 # GET /categoria_cargo/<id> - Obtener una categoria de cargo por ID
-@categoria_cargo_bp.route('/categoria_cargo/<int:id>', methods=['GET'])
+@categoria_cargo_bp.route('/categoria_cargo/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
     categoria_cargo = CategoriaCargoService.buscar_por_id(id)
     if not categoria_cargo:
@@ -25,7 +25,7 @@ def create():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 # PUT /categoria_cargo/<id> - Actualizar una categoria de cargo
-@categoria_cargo_bp.route('/categoria_cargo/<int:id>', methods=['PUT'])
+@categoria_cargo_bp.route('/categoria_cargo/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
     try:
@@ -43,7 +43,7 @@ def update(id: int):
         grado_buscado = GradoService.buscar_por_id(grado.id)
         self.assertIsNone(grado_buscado)
 # DELETE /categoria_cargo/<id> - Eliminar una categoria de cargo
-@categoria_cargo_bp.route('/categoria_cargo/<int:id>', methods=['DELETE'])
+@categoria_cargo_bp.route('/categoria_cargo/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = CategoriaCargoService.borrar_categoria_cargo(id)
     if not eliminado:

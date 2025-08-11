@@ -10,7 +10,7 @@ def read_all():
     planes = PlanService.buscar_todos()
     return plan_mapping.dump(planes, many=True), 200
 # GET /plan/<id> - Obtener un plan por ID
-@plan_bp.route('/plan/<int:id>', methods=['GET'])
+@plan_bp.route('/plan/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
     plan = PlanService.buscar_por_id(id)
     if not plan:
@@ -26,7 +26,7 @@ def create():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 # PUT /plan/<id> - Actualizar un plan
-@plan_bp.route('/plan/<int:id>', methods=['PUT'])
+@plan_bp.route('/plan/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
     try:
@@ -44,7 +44,7 @@ def update(id: int):
         grupo_buscado = GrupoService.buscar_por_id(grupo.id)
         self.assertIsNone(grupo_buscado)
 # DELETE /plan/<id> - Eliminar un plan
-@plan_bp.route('/plan/<int:id>', methods=['DELETE'])
+@plan_bp.route('/plan/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = PlanService.borrar_plan(id)
     if not eliminado:

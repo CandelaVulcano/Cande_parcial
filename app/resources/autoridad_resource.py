@@ -14,7 +14,7 @@ def read_all():
 
 
 # GET /autoridad/<id> - Obtener una autoridad por ID
-@autoridad_bp.route('/autoridad/<int:id>', methods=['GET'])
+@autoridad_bp.route('/autoridad/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
     autoridad = AutoridadService.buscar_por_id(id)
     if not autoridad:
@@ -34,7 +34,7 @@ def create():
 
 
 # PUT /autoridad/<id> - Actualizar una autoridad
-@autoridad_bp.route('/autoridad/<int:id>', methods=['PUT'])
+@autoridad_bp.route('/autoridad/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
     try:
@@ -47,7 +47,7 @@ def update(id: int):
 
 
 # DELETE /autoridad/<id> - Eliminar una autoridad
-@autoridad_bp.route('/autoridad/<int:id>', methods=['DELETE'])
+@autoridad_bp.route('/autoridad/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = AutoridadService.borrar_autoridad(id)
     if not eliminado:

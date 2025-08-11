@@ -14,7 +14,7 @@ def read_all():
 
 
 # GET /area/<id> - Obtener un área por ID
-@area_bp.route('/area/<int:id>', methods=['GET'])
+@area_bp.route('/area/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
     area = AreaService.buscar_por_id(id)
     if not area:
@@ -34,7 +34,7 @@ def create():
 
 
 # PUT /area/<id> - Actualizar un área
-@area_bp.route('/area/<int:id>', methods=['PUT'])
+@area_bp.route('/area/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
     try:
@@ -47,7 +47,7 @@ def update(id: int):
 
 
 # DELETE /area/<id> - Eliminar un área
-@area_bp.route('/area/<int:id>', methods=['DELETE'])
+@area_bp.route('/area/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = AreaService.borrar_area(id)
     if not eliminado:

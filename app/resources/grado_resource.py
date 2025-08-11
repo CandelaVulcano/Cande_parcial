@@ -14,7 +14,7 @@ def read_all():
 
 
 # GET /grado/<id> - Obtener un grado por ID
-@grado_bp.route('/grado/<int:id>', methods=['GET'])
+@grado_bp.route('/grado/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
     grado = GradoService.buscar_por_id(id)
     if not grado:
@@ -34,7 +34,7 @@ def create():
 
 
 # PUT /grado/<id> - Actualizar un grado
-@grado_bp.route('/grado/<int:id>', methods=['PUT'])
+@grado_bp.route('/grado/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
     try:
@@ -47,7 +47,7 @@ def update(id: int):
 
 
 # DELETE /grado/<id> - Eliminar un grado
-@grado_bp.route('/grado/<int:id>', methods=['DELETE'])
+@grado_bp.route('/grado/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = GradoService.borrar_grado(id)
     if not eliminado:
