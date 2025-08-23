@@ -13,7 +13,6 @@ class NotaService:
 
     @staticmethod
     def crear(data):
-        # Crea una nueva nota a partir de un diccionario de datos
         nueva_nota = Nota(**data)
         db.session.add(nueva_nota)
         db.session.commit()
@@ -21,7 +20,6 @@ class NotaService:
 
     @staticmethod
     def actualizar(id: int, data):
-        # Actualiza una nota existente
         nota = NotaRepository.buscar_por_id(id)
         if not nota:
             return None
@@ -32,7 +30,6 @@ class NotaService:
 
     @staticmethod
     def borrar_por_id(id: int):
-        # Borra una nota por su id
         nota = NotaRepository.buscar_por_id(id)
         if not nota:
             return None
