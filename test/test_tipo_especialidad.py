@@ -1,4 +1,4 @@
-import unit
+import unittest
 import os
 from flask import current_app
 from app import create_app
@@ -6,7 +6,8 @@ from app.models import TipoEspecialidad
 from app.services import TipoEspecialidadService
 from app import db
 
-class TipoEspecialidadCase(unit.Case):
+
+class TipoEspecialidadCase(unittest.TestCase):
     def setUp(self):
         os.environ['FLASK_CONTEXT'] = 'ing'
         self.app = create_app()
@@ -32,15 +33,16 @@ class TipoEspecialidadCase(unit.Case):
         self.assertIsNotNone(tipo_especialidad.id)
         self.assertGreaterEqual(tipo_especialidad.id, 1)
         self.assertEqual(tipo_especialidad.nombre, "Cardiología")
-        self.assertEqual(tipo_especialidad.nivel, "Básico")  
+        self.assertEqual(tipo_especialidad.nivel, "Básico")
 
     def _tipo_especialidad_busqueda(self):
         tipo_especialidad = self.__nuevoTipoEspecialidad()
         TipoEspecialidadService.crear_tipo_especialidad(tipo_especialidad)
-        encontrado = TipoEspecialidadService.buscar_por_id(tipo_especialidad.id)
+        encontrado = TipoEspecialidadService.buscar_por_id(
+            tipo_especialidad.id)
         self.assertIsNotNone(encontrado)
         self.assertEqual(encontrado.nombre, "Cardiología")
-        self.assertEqual(encontrado.nivel, "Básico") 
+        self.assertEqual(encontrado.nivel, "Básico")
 
     def _buscar_tipos_especialidad(self):
         tipo_especialidad1 = self.__nuevoTipoEspecialidad("Cardiología")
@@ -56,7 +58,8 @@ class TipoEspecialidadCase(unit.Case):
         TipoEspecialidadService.crear_tipo_especialidad(tipo_especialidad)
         tipo_especialidad.nombre = "Cardiología Avanzada"
         tipo_especialidad.nivel = "Avanzado"
-        tipo_especialidad_actualizado = TipoEspecialidadService.actualizar_tipo_especialidad(tipo_especialidad.id, tipo_especialidad)
+        tipo_especialidad_actualizado = TipoEspecialidadService.actualizar_tipo_especialidad(
+            tipo_especialidad.id, tipo_especialidad)
         self.assertIsNotNone(tipo_especialidad_actualizado)
 
     def _borrar_tipo_especialidad(self):
@@ -70,15 +73,15 @@ class TipoEspecialidadCase(unit.Case):
         self.assertEqual(borrado.nivel, "Básico")
 
         # Verificar que ya no existe en la base
-        tipo_especialidad_borrado = TipoEspecialidadService.buscar_por_id(tipo_especialidad.id)
+        tipo_especialidad_borrado = TipoEspecialidadService.buscar_por_id(
+            tipo_especialidad.id)
         self.assertIsNone(tipo_especialidad_borrado)
-       
 
     def __nuevoTipoEspecialidad(self, nombre="Cardiología"):
         tipo_especialidad = TipoEspecialidad()
         tipo_especialidad.nombre = nombre
         tipo_especialidad.nivel = "Básico"
         return tipo_especialidad
-    
+
     if __name__ == '__main__':
-        unit.main()
+        unittest.main()
