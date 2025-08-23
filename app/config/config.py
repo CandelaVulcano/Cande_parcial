@@ -1,67 +1,62 @@
+from asyncio.log import logger
+from dotenv import load_dotenv
+from pathlib import Path
 import os
 
-from dotenv import load_dotenv
-
-basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, ".env"))  # Carga las variables del entorno
+basedir = os.path.abspath(Path(__file__).parents[2])
+load_dotenv(os.path.join(basedir, '.env'))
 
 
-class Config:
+class Config(object):
+    TESTING = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_RECORD_QUERIES = True
+    HASHIDS_MIN_LENGTH = int(os.environ.get('HASHIDS_MIN_LENGTH', 8))
+    HASHIDS_ALPHABET = os.environ.get(
+        'HASHIDS_ALPHABET', 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')
+    HASHIDS_SALT = os.environ.get('HASHIDS_SALT', 'default_salt')
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'default_secret_key')
 
     @staticmethod
     def init_app(app):
-        """Método para inicializar configuraciones adicionales si es necesario."""
         pass
 
-    @staticmethod
-    def validate_required_env_vars(env_vars):
-        """Valida que las variables de entorno críticas estén definidas."""
-        missing_vars = [var for var in env_vars if not os.getenv(var)]
-        if missing_vars:
-            raise ValueError(
-                f"Las siguientes variables de entorno faltan o están vacías: {', '.join(missing_vars)}")
+
+class TestConfig(Config):
+    TESTING = True
+    DEBUG = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL",
+                                             "sqlite:///test.db")
+    # Valores para Hashids que no dependan del .env
+    HASHIDS_ALPHABET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    HASHIDS_MIN_LENGTH = 8
+    HASHIDS_SALT = 'testing_salt'
 
 
 class DevelopmentConfig(Config):
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_RECORD_QUERIES = True
-    DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.getenv('DEV_DATABASE_URI')
-
-    @staticmethod
-    def init_app(app):
-        """Valida las variables de entorno críticas para desarrollo."""
-        Config.validate_required_env_vars(['DEV_DATABASE_URI'])
-
-
-class TestingConfig(Config):
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_RECORD_QUERIES = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.getenv('TEST_DB_URI')
-
-    @staticmethod
-    def init_app(app):
-        """Valida las variables de entorno críticas para pruebas."""
-        Config.validate_required_env_vars(['TEST_DB_URI'])
+    DEBUG = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URI')
 
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv("PROD_DATABASE_URI")
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_RECORD_QUERIES = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('PROD_DATABASE_URI')
 
-    @staticmethod
-    def init_app(app):
-        """Valida las variables de entorno críticas para producción."""
-        Config.validate_required_env_vars(['PROD_DATABASE_URI'])
+    @classmethod
+    def init_app(cls, app):
+        Config.init_app(app)
 
 
-def factory(env):
-    """Devuelve la configuración adecuada según el entorno."""
-    envs = {
-        "development": DevelopmentConfig,
-        "production": ProductionConfig,
-        "testing": TestingConfig,
-        "default": DevelopmentConfig
+def factory(app: str) -> Config:
+    configuration = {
+        'testing': TestConfig,
+        'development': DevelopmentConfig,
+        'production': ProductionConfig
     }
-    return envs.get(env, DevelopmentConfig)
+
+    return configuration[app]
