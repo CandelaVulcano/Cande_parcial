@@ -2,18 +2,6 @@
 
 Este proyecto es una aplicación para la gestión académica, desarrollada en Python. Incluye modelos, repositorios, servicios y pruebas automatizadas.
 
-## Estructura del proyecto
-
-- **app/**: Código principal de la aplicación.
-  - **models/**: Definición de modelos de datos (Alumno, Materia, etc).
-  - **repositories/**: Acceso y manipulación de datos.
-  - **mapping/**: Mapeo de entidades.
-  - **config/**: Configuración de la aplicación.
-  - **resources/**, **services/**, **static/**, **templates/**, **validators/**: Recursos adicionales, servicios, archivos estáticos, plantillas y validadores.
-- **servidor-docker/**: Archivos para despliegue con Docker.
-- **test/**: Pruebas unitarias y de integración.
-- **requirements.txt**: Dependencias del proyecto.
-- **install.py**: Script de instalación.
 
 ## Requisitos previos
 
