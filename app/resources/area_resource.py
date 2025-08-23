@@ -5,13 +5,11 @@ from app.mapping.area_mapping import AreaMapping
 area_bp = Blueprint('area', __name__)
 area_mapping = AreaMapping()
 
-# GET /areas - Obtener todas las áreas
 @area_bp.route('/areas', methods=['GET'])
 def read_all():
     areas = AreaService.buscar_todos()
     return area_mapping.dump(areas, many=True), 200
 
-# GET /area/<id> - Obtener un área por ID
 @area_bp.route('/area/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
     area = AreaService.buscar_por_id(id)
@@ -19,7 +17,6 @@ def read_by_id(id: int):
         return jsonify({"error": "Área no encontrada"}), 404
     return area_mapping.dump(area), 200
 
-# POST /area - Crear una nueva área
 @area_bp.route('/area', methods=['POST'])
 def create():
     data = request.get_json()
@@ -29,7 +26,6 @@ def create():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-# PUT /area/<id> - Actualizar un área
 @area_bp.route('/area/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
@@ -41,7 +37,6 @@ def update(id: int):
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-# DELETE /area/<id> - Eliminar un área
 @area_bp.route('/area/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = AreaService.borrar_area(id)

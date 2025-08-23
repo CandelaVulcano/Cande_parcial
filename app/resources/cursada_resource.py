@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.services.cursada_service import CursadaService
-from app.resources.cursada_mapping import CursadaMapping
+from app.mapping.cursada_mapping import CursadaMapping
 
 cursada_bp = Blueprint('cursada', __name__)
 cursada_mapping = CursadaMapping()

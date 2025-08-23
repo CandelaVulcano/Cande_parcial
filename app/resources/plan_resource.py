@@ -4,19 +4,19 @@ from app.mapping.plan_mapping import PlanMapping
 
 plan_bp = Blueprint('plan', __name__)
 plan_mapping = PlanMapping()
-# GET /planes - Obtener todos los planes
+
 @plan_bp.route('/planes', methods=['GET'])
 def read_all():
     planes = PlanService.buscar_todos()
     return plan_mapping.dump(planes, many=True), 200
-# GET /plan/<id> - Obtener un plan por ID
+
 @plan_bp.route('/plan/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
     plan = PlanService.buscar_por_id(id)
     if not plan:
         return jsonify({"error": "Plan no encontrado"}), 404
     return plan_mapping.dump(plan), 200
-# POST /plan - Crear un nuevo plan
+
 @plan_bp.route('/plan', methods=['POST'])
 def create():
     data = request.get_json()
@@ -25,7 +25,7 @@ def create():
         return plan_mapping.dump(nuevo_plan), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-# PUT /plan/<id> - Actualizar un plan
+
 @plan_bp.route('/plan/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
@@ -43,7 +43,7 @@ def update(id: int):
         self.assertTrue(resultado)
         grupo_buscado = GrupoService.buscar_por_id(grupo.id)
         self.assertIsNone(grupo_buscado)
-# DELETE /plan/<id> - Eliminar un plan
+
 @plan_bp.route('/plan/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = PlanService.borrar_plan(id)

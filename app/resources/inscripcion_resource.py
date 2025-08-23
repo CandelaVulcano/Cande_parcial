@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.services.inscripcion_service import InscripcionService
-from app.resources.inscripcion_mapping import InscripcionMapping
+from app.mapping.inscripcion_mapping import InscripcionMapping
 
 inscripcion_bp = Blueprint('inscripcion', __name__)
 inscripcion_mapping = InscripcionMapping()

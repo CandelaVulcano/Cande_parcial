@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.services.evaluacion_service import EvaluacionService
-from app.resources.evaluacion_mapping import EvaluacionMapping
+from app.mapping.evaluacion_mapping import EvaluacionMapping
 
 evaluacion_bp = Blueprint('evaluacion', __name__)
 evaluacion_mapping = EvaluacionMapping()

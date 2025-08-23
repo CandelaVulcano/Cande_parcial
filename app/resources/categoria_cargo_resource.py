@@ -4,15 +4,11 @@ from app.mapping.categoria_cargo_mapping import CategoriaCargoMapping
 
 categoria_cargo_bp = Blueprint('categoria_cargo', __name__)
 categoria_cargo_mapping = CategoriaCargoMapping()
-# GET /categorias_cargo - Obtener todas las categorias de cargo
-
 
 @categoria_cargo_bp.route('/categorias_cargo', methods=['GET'])
 def read_all():
     categorias_cargo = CategoriaCargoService.buscar_todos()
     return categoria_cargo_mapping.dump(categorias_cargo, many=True), 200
-# GET /categoria_cargo/<id> - Obtener una categoria de cargo por ID
-
 
 @categoria_cargo_bp.route('/categoria_cargo/<hashid:id>', methods=['GET'])
 def read_by_id(id: int):
@@ -20,8 +16,6 @@ def read_by_id(id: int):
     if not categoria_cargo:
         return jsonify({"error": "Categoria de cargo no encontrada"}), 404
     return categoria_cargo_mapping.dump(categoria_cargo), 200
-# POST /categoria_cargo - Crear una nueva categoria de cargo
-
 
 @categoria_cargo_bp.route('/categoria_cargo', methods=['POST'])
 def create():
@@ -32,8 +26,6 @@ def create():
         return categoria_cargo_mapping.dump(nueva_categoria_cargo), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-# PUT /categoria_cargo/<id> - Actualizar una categoria de cargo
-
 
 @categoria_cargo_bp.route('/categoria_cargo/<hashid:id>', methods=['PUT'])
 def update(id: int):
@@ -54,8 +46,6 @@ def update(id: int):
         self.assertTrue(resultado)
         grado_buscado = GradoService.buscar_por_id(grado.id)
         self.assertIsNone(grado_buscado)
-# DELETE /categoria_cargo/<id> - Eliminar una categoria de cargo
-
 
 @categoria_cargo_bp.route('/categoria_cargo/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
@@ -63,7 +53,6 @@ def delete(id: int):
     if not eliminado:
         return jsonify({"error": "Categoria de cargo no encontrada"}), 404
     return jsonify({"message": "Categoria de cargo eliminada"}), 200
-
 
 if __name__ == "__main__":
     from app import create_app
