@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from app import db
 from app.models.alumno_grupo import alumno_grupo
-from flask_hashids import HashidMixmin
+from flask_hashids import HashidMixin
 
 
 @dataclass(init=False, repr=True, eq=True)
-class Alumno(HashidMixmin, db.Model):
+class Alumno(HashidMixin, db.Model):
     __tablename__ = 'alumnos'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     apellido = db.Column(db.String(50), nullable=False)
