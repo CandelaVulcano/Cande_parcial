@@ -3,16 +3,13 @@ from .area_repositorio import AreaRepository
 from .autoridad_repositorio import AutoridadRepository
 from .cargo_repositorio import CargoRepository
 from .categoria_cargo_repositorio import CategoriaCargoRepository
-from .cursada_repositorio import CursadaRepository
 from .departamento_repositorio import DepartamentoRepository
 from .especialidad_repositorio import EspecialidadRepository
-from .evaluacion_repositorio import EvaluacionRepository
 from .facultad_repositorio import FacultadRepository
 from .grado_repositorio import GradoRepository
 from .grupo_repositorio import GrupoRepository
 from .inscripcion_repositorio import InscripcionRepository
 from .materia_repositorio import MateriaRepository
-from .nota_repositorio import NotaRepository
 from .orientacion_repositorio import OrientacionRepository
 from .plan_repositorio import PlanRepository
 from .tipo_dedicacion_repositorio import TipoDedicacionRepository

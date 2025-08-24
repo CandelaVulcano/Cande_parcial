@@ -20,9 +20,9 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - db
+      - postgresql
     environment:
-      - DATABASE_URL=postgresql://usuario:contraseña@db:5432/basededatos
+      - DATABASE_URL=postgresql://usuario:contraseña@postgresql:5432/prueba_1
 volumes:
   pgdata:
 
