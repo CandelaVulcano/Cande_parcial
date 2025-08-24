@@ -3,7 +3,6 @@ from app import db
 from app.models.alumno_grupo import alumno_grupo
 from flask_hashids import HashidMixmin
 
-
 @dataclass(init=False, repr=True, eq=True)
 class Grupo(HashidMixmin, db.Model):
     __tablename__ = 'grupos'

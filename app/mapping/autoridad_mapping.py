@@ -2,7 +2,6 @@ from marshmallow import Schema, fields, post_load, validate
 from markupsafe import escape
 from app.models.autoridad import Autoridad
 
-
 class AutoridadMapping(Schema):
     hashid = fields.String(dump_only=True)
     nombre = fields.String(
@@ -13,7 +12,7 @@ class AutoridadMapping(Schema):
         required=False, validate=validate.Length(max=20))
     email = fields.String(
         required=True, validate=validate.Length(min=1, max=100))
-    facultad_id = fields.Int(required=True)  # referencia a llave foránea
+    facultad_id = fields.Int(required=True)
 
     @post_load
     def nueva_autoridad(self, data, **kwargs):

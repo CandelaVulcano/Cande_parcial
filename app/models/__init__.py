@@ -4,16 +4,13 @@ from .area import Area
 from .autoridad import Autoridad
 from .cargo import Cargo
 from .categoria_cargo import CategoriaCargo
-from .cursada import Cursada
 from .departamento import Departamento
 from .especialidad import Especialidad
-from .evaluacion import Evaluacion
 from .facultad import Facultad
 from .grado import Grado
 from .grupo import Grupo
 from .inscripcion import Inscripcion
 from .materia import Materia
-from .nota import Nota
 from .orientacion import Orientacion
 from .plan import Plan
 from .tipo_dedicacion import TipoDedicacion

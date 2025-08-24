@@ -2,7 +2,6 @@ from marshmallow import Schema, fields, post_load, validate
 from markupsafe import escape
 from app.models.tipo_especialidad import TipoEspecialidad
 
-
 class TipoEspecialidadMapping(Schema):
     hashid = fields.String(dump_only=True)
     nombre = fields.String(

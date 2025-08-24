@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from app import db
 from flask_hashids import HashidMixmin
 
-
 @dataclass(init=False, repr=True, eq=True)
 class Especialidad(HashidMixmin, db.Model):
     __tablename__ = 'especialidades'
