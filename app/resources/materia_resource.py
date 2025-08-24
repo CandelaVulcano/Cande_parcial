@@ -5,19 +5,19 @@ from app import db
 from app.validators.materia_validator import validate_materia
 
 materia_blueprint = Blueprint('materia', __name__)
-# GET /materias - Obtener todas las materias
+
 @materia_blueprint.route('/materias', methods=['GET'])
 def get_all_materias():
     materias = MateriaService.buscar_todos()
     return jsonify([materia.to_dict() for materia in materias]), 200
-# GET /materia/<id> - Obtener una materia por ID
+
 @materia_blueprint.route('/materia/<hashid:id>', methods=['GET'])
 def get_materia_by_id(id: int):
     materia = MateriaService.buscar_por_id(id)
     if not materia:
         return jsonify({"error": "Materia no encontrada"}), 404
     return jsonify(materia.to_dict()), 200
-# POST /materia - Crear una nueva materia
+
 @materia_blueprint.route('/materia', methods=['POST'])
 def create_materia():
     data = request.get_json()
@@ -31,7 +31,7 @@ def create_materia():
         return jsonify(nueva_materia.to_dict()), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-# PUT /materia/<id> - Actualizar una materia
+
 @materia_blueprint.route('/materia/<hashid:id>', methods=['PUT'])
 def update_materia(id: int):
     data = request.get_json()
@@ -47,7 +47,7 @@ def update_materia(id: int):
         return jsonify(materia_actualizada.to_dict()), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-# DELETE /materia/<id> - Eliminar una materia
+
 @materia_blueprint.route('/materia/<hashid:id>', methods=['DELETE'])
 def delete_materia(id: int):
     eliminado = MateriaService.borrar_materia(id)

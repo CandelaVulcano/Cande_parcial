@@ -4,19 +4,19 @@ from app.models.grupo import Grupo
 from app import db
 
 grupo_blueprint = Blueprint('grupo', __name__)
-# GET /grupos - Obtener todos los grupos
+
 @grupo_blueprint.route('/grupos', methods=['GET'])
 def get_all_grupos():
     grupos = GrupoService.buscar_todos()
     return jsonify([grupo.to_dict() for grupo in grupos]), 200
-# GET /grupo/<id> - Obtener un grupo por ID
+
 @grupo_blueprint.route('/grupo/<hashid:id>', methods=['GET'])
 def get_grupo_by_id(id: int):
     grupo = GrupoService.buscar_por_id(id)
     if not grupo:
         return jsonify({"error": "Grupo no encontrado"}), 404
     return jsonify(grupo.to_dict()), 200
-# POST /grupo - Crear un nuevo grupo
+
 @grupo_blueprint.route('/grupo', methods=['POST'])
 def create_grupo():
     data = request.get_json()
@@ -27,7 +27,7 @@ def create_grupo():
         return jsonify(nuevo_grupo.to_dict()), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-# PUT /grupo/<id> - Actualizar un grupo
+
 @grupo_blueprint.route('/grupo/<hashid:id>', methods=['PUT'])
 def update_grupo(id: int):
     data = request.get_json()
@@ -40,7 +40,7 @@ def update_grupo(id: int):
         return jsonify(grupo_actualizado.to_dict()), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-# DELETE /grupo/<id> - Eliminar un grupo
+
 @grupo_blueprint.route('/grupo/<hashid:id>', methods=['DELETE'])
 def delete_grupo(id: int):
     eliminado = GrupoService.borrar_grupo(id)

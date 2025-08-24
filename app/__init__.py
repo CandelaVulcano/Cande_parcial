@@ -1,39 +1,55 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 import os
 
-# Crear instancia de la base de datos
-db = SQLAlchemy()
+from flask import Flask
+from flask_marshmallow import Marshmallow
+from flask_sqlalchemy import SQLAlchemy
 
-def create_app(test_config=None):
-    """Create and configure the Flask application."""
-    app = Flask(__name__, instance_relative_config=True)
-    
-    # Configurar la aplicación según el entorno
-    if os.environ.get('FLASK_CONTEXT') == 'testing':
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
-    
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
-    
-    # Si hay configuración de prueba, aplicarla
-    if test_config:
-        app.config.update(test_config)
-    
-    # Inicializar extensiones con la aplicación
+from .config import config
+
+db = SQLAlchemy()
+ma = Marshmallow()
+
+
+def create_app() -> None:
+    config_name = os.getenv('FLASK_ENV')
+    app = Flask(__name__)
+    f = config.factory(config_name if config_name else 'development')
+    app.config.from_object(f)
+    f.init_app(app)
     db.init_app(app)
-    
-    # Asegurarse de que exista el directorio de instancia
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-    
-    # Configura rutas iniciales (opcional)
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
-    
+    ma.init_app(app)
+
+    from app.resources import home_bp, universidad_bp, departamento_bp, cargo_bp, categoria_cargo_bp, autoridad_bp
+    from app.resources import grupo_blueprint, tipo_documento_blueprint, materia_blueprint, orientacion_blueprint
+    from app.resources import especialidad_bp, plan_bp, grado_bp, certificado_bp, alumno_bp
+    from app.resources import inscripcion_bp, cursada_bp, evaluacion_bp, nota_bp, area_bp, facultad_bp
+    app.register_blueprint(home_bp, url_prefix='/api/v1')
+    app.register_blueprint(universidad_bp, url_prefix='/api/v1')
+    app.register_blueprint(departamento_bp, url_prefix='/api/v1')
+    app.register_blueprint(cargo_bp, url_prefix='/api/v1')
+    app.register_blueprint(categoria_cargo_bp, url_prefix='/api/v1')
+    app.register_blueprint(autoridad_bp, url_prefix='/api/v1')
+    app.register_blueprint(grupo_blueprint, url_prefix='/api/v1')
+    app.register_blueprint(tipo_documento_blueprint, url_prefix='/api/v1')
+    app.register_blueprint(materia_blueprint, url_prefix='/api/v1')
+    app.register_blueprint(orientacion_blueprint, url_prefix='/api/v1')
+    app.register_blueprint(especialidad_bp, url_prefix='/api/v1')
+    app.register_blueprint(plan_bp, url_prefix='/api/v1')
+    app.register_blueprint(grado_bp, url_prefix='/api/v1')
+    app.register_blueprint(certificado_bp, url_prefix='/api/v1')
+    app.register_blueprint(alumno_bp, url_prefix='/api/v1')
+    app.register_blueprint(inscripcion_bp, url_prefix='/api/v1')
+    app.register_blueprint(cursada_bp, url_prefix='/api/v1')
+    app.register_blueprint(evaluacion_bp, url_prefix='/api/v1')
+    app.register_blueprint(nota_bp, url_prefix='/api/v1')
+    app.register_blueprint(facultad_bp, url_prefix='/api/v1')
+    app.register_blueprint(area_bp, url_prefix='/api/v1')
+
+    @app.shell_context_processor
+    def ctx():
+        return {
+            "app": app,
+            'db': db
+        }
+
     return app

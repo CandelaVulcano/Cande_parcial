@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.services.nota_service import NotaService
-from app.resources.nota_mapping import NotaMapping
+from app.mapping.nota_mapping import NotaMapping
 
 nota_bp = Blueprint('nota', __name__)
 nota_mapping = NotaMapping()
