@@ -3,6 +3,7 @@ from app.services.facultad_service import FacultadService
 from app.models.facultad import Facultad
 from app import db
 from app.utils import validate_json
+from app.validators.facultad_validator import validate_facultad
 
 facultad_bp = Blueprint('facultad', __name__)
 # GET /facultades - Obtener todas las facultades
@@ -21,8 +22,9 @@ def read_by_id(id: int):
 @facultad_bp.route('/facultad', methods=['POST'])
 def create():
     data = request.get_json()
-    if not validate_json(data, Facultad):
-        return jsonify({"error": "Datos inválidos"}), 400
+    errors = validate_facultad(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         nueva_facultad = FacultadService.crear_facultad(data)
         return jsonify(nueva_facultad.to_dict()), 201
@@ -32,8 +34,9 @@ def create():
 @facultad_bp.route('/facultad/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
-    if not validate_json(data, Facultad):
-        return jsonify({"error": "Datos inválidos"}), 400
+    errors = validate_facultad(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         facultad_actualizada = FacultadService.actualizar_facultad(id, data)
         if not facultad_actualizada:

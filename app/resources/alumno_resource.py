@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.services.alumno_service import AlumnoService
 from app.mapping.alumno_mapping import AlumnoMapping
+from app.validators.alumno_validator import validate_alumno
 
 alumno_bp = Blueprint('alumno', __name__)
 alumno_mapping = AlumnoMapping()
@@ -26,6 +27,9 @@ def read_by_id(id: int):
 @alumno_bp.route('/alumno', methods=['POST'])
 def create():
     data = request.get_json()
+    errors = validate_alumno(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         nuevo_alumno = AlumnoService.crear_alumno(data)
         return alumno_mapping.dump(nuevo_alumno), 201
@@ -37,6 +41,9 @@ def create():
 @alumno_bp.route('/alumno/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
+    errors = validate_alumno(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         alumno_actualizado = AlumnoService.actualizar_alumno(id, data)
         if not alumno_actualizado:

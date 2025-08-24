@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.services.materia_service import MateriaService
 from app.models.materia import Materia
 from app import db
+from app.validators.materia_validator import validate_materia
 
 materia_blueprint = Blueprint('materia', __name__)
 # GET /materias - Obtener todas las materias
@@ -22,6 +23,9 @@ def create_materia():
     data = request.get_json()
     if not data or 'nombre' not in data:
         return jsonify({"error": "Datos inválidos"}), 400
+    errors = validate_materia(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         nueva_materia = MateriaService.crear_materia(data)
         return jsonify(nueva_materia.to_dict()), 201
@@ -33,6 +37,9 @@ def update_materia(id: int):
     data = request.get_json()
     if not data or 'nombre' not in data:
         return jsonify({"error": "Datos inválidos"}), 400
+    errors = validate_materia(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         materia_actualizada = MateriaService.actualizar_materia(id, data)
         if not materia_actualizada:
