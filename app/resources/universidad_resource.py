@@ -36,8 +36,7 @@ def eliminar_universidad(id: int):
 
 @universidad_bp.route('/universidad/<hashid:id>', methods=['PUT'])
 @validate_with(UniversidadMapping)
-def actualizar_universidad(id: int):
-    universidad_data = universidad.mapping.load(request.json())
+def actualizar_universidad(universidad_data, id: int):
     universidad = UniversidadService.actualizar(id, universidad_data)
     return universidad_mapping.dump(universidad), 200
 
