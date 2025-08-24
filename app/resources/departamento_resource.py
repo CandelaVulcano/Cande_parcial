@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.services.departamento_service import DepartamentoService
 from app.mapping.departamento_mapping import DepartamentoMapping
+from app.validators.departamento_validator import validate_departamento
 departamento_bp = Blueprint('departamento', __name__)
 departamento_mapping = DepartamentoMapping()
 
@@ -19,6 +20,9 @@ def read_by_id(id: int):
 @departamento_bp.route('/departamento', methods=['POST'])
 def create():
     data = request.get_json()
+    errors = validate_departamento(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         nuevo_departamento = DepartamentoService.crear_departamento(data)
         return departamento_mapping.dump(nuevo_departamento), 201
@@ -28,6 +32,9 @@ def create():
 @departamento_bp.route('/departamento/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
+    errors = validate_departamento(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         departamento_actualizado = DepartamentoService.actualizar_departamento(id, data)
         if not departamento_actualizado:
