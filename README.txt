@@ -44,3 +44,9 @@ python -m unittest discover test
 
 ## Licencia
 Este proyecto es de uso académico.
+
+## Inteligencias artificiales utilizadas
+- Claude Sonnet 3.7
+- Claude Sonnet 3.5
+- GPT-5 mini
+- GPT-4.1

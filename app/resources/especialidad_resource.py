@@ -1,17 +1,18 @@
+
 from flask import Blueprint, request, jsonify
 from app.services.especialidad_service import EspecialidadService
-from app.models.especialidad import Especialidad
-from app import db
+from app.mapping.especialidad_mapping import EspecialidadMapping
+from app.validators.especialidad_validator import EspecialidadValidator
 
-# NO TIENE ARCHIVO VALIDATOR, HAY QUE CREARLO
 
 especialidad_bp = Blueprint('especialidad', __name__)
+especialidad_mapping = EspecialidadMapping()
 
 
 @especialidad_bp.route('/especialidades', methods=['GET'])
 def read_all():
     especialidades = EspecialidadService.buscar_todos()
-    return jsonify([especialidad.to_dict() for especialidad in especialidades]), 200
+    return especialidad_mapping.dump(especialidades, many=True), 200
 
 
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['GET'])
@@ -19,17 +20,18 @@ def read_by_id(id: int):
     especialidad = EspecialidadService.buscar_por_id(id)
     if not especialidad:
         return jsonify({"error": "Especialidad no encontrada"}), 404
-    return jsonify(especialidad.to_dict()), 200
+    return especialidad_mapping.dump(especialidad), 200
 
 
 @especialidad_bp.route('/especialidad', methods=['POST'])
 def create():
     data = request.get_json()
-    if not validate_json(data, Especialidad):
-        return jsonify({"error": "Datos inválidos"}), 400
+    errors = EspecialidadValidator.validate_especialidad(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         nueva_especialidad = EspecialidadService.crear_especialidad(data)
-        return jsonify(nueva_especialidad.to_dict()), 201
+        return especialidad_mapping.dump(nueva_especialidad), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
@@ -37,14 +39,14 @@ def create():
 @especialidad_bp.route('/especialidad/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
-    if not validate_json(data, Especialidad):
-        return jsonify({"error": "Datos inválidos"}), 400
+    errors = EspecialidadValidator.validate_especialidad(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
-        especialidad_actualizada = EspecialidadService.actualizar_especialidad(
-            id, data)
+        especialidad_actualizada = EspecialidadService.actualizar_especialidad(id, data)
         if not especialidad_actualizada:
             return jsonify({"error": "Especialidad no encontrada"}), 404
-        return jsonify(especialidad_actualizada.to_dict()), 200
+        return especialidad_mapping.dump(especialidad_actualizada), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 

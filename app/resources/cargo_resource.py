@@ -1,6 +1,8 @@
+
 from flask import Blueprint, request, jsonify
 from app.services.cargo_service import CargoService
 from app.mapping.cargo_mapping import CargoMapping
+from app.validators.cargo_validator import CargoValidator
 
 cargo_bp = Blueprint('cargo', __name__)
 cargo_mapping = CargoMapping()
@@ -20,6 +22,9 @@ def read_by_id(id: int):
 @cargo_bp.route('/cargo', methods=['POST'])
 def create():
     data = request.get_json()
+    errors = CargoValidator.validate_cargo(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         nuevo_cargo = CargoService.crear_cargo(data)
         return cargo_mapping.dump(nuevo_cargo), 201
@@ -29,6 +34,9 @@ def create():
 @cargo_bp.route('/cargo/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
+    errors = CargoValidator.validate_cargo(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         cargo_actualizado = CargoService.actualizar_cargo(id, data)
         if not cargo_actualizado:

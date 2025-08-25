@@ -16,8 +16,6 @@ def read_by_id(id):
     nota = NotaService.buscar_por_id(id)
     return nota_mapping.dump(nota), 200
 
-
-# Endpoint para crear una nota
 @nota_bp.route('/notas', methods=['POST'])
 def create_nota():
     data = request.get_json()
@@ -27,7 +25,6 @@ def create_nota():
     nueva_nota = NotaService.crear(data)
     return nota_mapping.dump(nueva_nota), 201
 
-# Endpoint para actualizar una nota
 @nota_bp.route('/nota/<int:id>', methods=['PUT'])
 def update_nota(id):
     data = request.get_json()
