@@ -2,10 +2,8 @@ import unittest
 import os
 import sys
 
-# Añadir el directorio raíz del proyecto al path para poder importar desde app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Definimos una versión simplificada de create_app que no importa los recursos
 def create_simple_app(config_name='testing'):
     from flask import Flask
     from app.config import config
@@ -15,7 +13,6 @@ def create_simple_app(config_name='testing'):
     app.config.from_object(config_class)
     from app import db
     db.init_app(app)
-    
     return app
 
 from flask import current_app

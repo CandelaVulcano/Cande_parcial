@@ -2,13 +2,11 @@ import unittest
 import os
 import sys
 
-# Añadir el directorio raíz del proyecto al path para poder importar desde app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from flask import current_app
 from app import db
 
-# Definimos una versión simplificada de create_app que no importa los recursos
 def create_simple_app(config_name='testing'):
     from flask import Flask
     from app.config import config
@@ -22,11 +20,8 @@ def create_simple_app(config_name='testing'):
 
 from app.models.especialidad import Especialidad
 from app.models.tipo_especialidad import TipoEspecialidad
-# No importamos el servicio para evitar problemas con WeasyPrint
-# from app.services.especialidad_service import EspecialidadService
 from app.repositories.especialidad_repositorio import EspecialidadRepository
 
-# Definimos funciones de ayuda directamente en este archivo en lugar de importarlas
 def nuevaEspecialidad(tipo_especialidad_id=None):
     especialidad = Especialidad()
     especialidad.nombre = "Especialidad 1"
@@ -45,14 +40,12 @@ def nuevaEspecialidad2(tipo_especialidad_id=None):
 
 
 class EspecialidadTestCase (unittest.TestCase):
-
     def setUp(self):
         self.app = create_simple_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
         
-        # Creamos un tipo de especialidad para usar en las pruebas
         self.tipo_especialidad = TipoEspecialidad()
         self.tipo_especialidad.nombre = "Tipo de Especialidad de Prueba"
         self.tipo_especialidad.nivel = "Nivel de Prueba"
@@ -104,7 +97,6 @@ class EspecialidadTestCase (unittest.TestCase):
         encontrada = EspecialidadRepository.buscar_por_id(especialidad.id)
         self.assertIsNone(encontrada)
 
-    # No repetir assert
     def _assert_especialidad(self, especialidad, nombre, observacion, letra):
         self.assertIsNotNone(especialidad)
         self.assertIsNotNone(especialidad.id)

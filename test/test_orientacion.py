@@ -2,11 +2,9 @@ import unittest
 import os
 import sys
 
-# Añadir el directorio raíz del proyecto al path para poder importar desde app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from flask import current_app
-# Definimos una versión simplificada de create_app que no importa los recursos
 def create_simple_app(config_name='testing'):
     from flask import Flask
     from app.config import config
@@ -38,9 +36,6 @@ class AppTestCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
         
-        # Crear objetos necesarios para las pruebas
-        
-        # 1. Crear Universidad
         from app.models.universidad import Universidad
         self.universidad = Universidad()
         self.universidad.nombre = "Universidad de Prueba"
@@ -48,7 +43,6 @@ class AppTestCase(unittest.TestCase):
         db.session.add(self.universidad)
         db.session.commit()
         
-        # 2. Crear Facultad
         self.facultad = Facultad()
         self.facultad.nombre = "Facultad de Prueba"
         self.facultad.abreviatura = "FP"
@@ -59,14 +53,12 @@ class AppTestCase(unittest.TestCase):
         db.session.add(self.facultad)
         db.session.commit()
         
-        # 3. Crear Departamento
         self.departamento = Departamento()
         self.departamento.nombre = "Departamento de Prueba"
         self.departamento.facultad_id = self.facultad.id
         db.session.add(self.departamento)
         db.session.commit()
         
-        # 4. Crear Materia
         self.materia = Materia()
         self.materia.nombre = "Materia de Prueba"
         self.materia.codigo = "MP001"
@@ -74,21 +66,18 @@ class AppTestCase(unittest.TestCase):
         db.session.add(self.materia)
         db.session.commit()
         
-        # 5. Crear Plan
         self.plan = Plan()
         self.plan.nombre = "Plan de Prueba"
         self.plan.fecha_inicio = "2023-01-01"
         db.session.add(self.plan)
         db.session.commit()
         
-        # 6. Crear TipoEspecialidad
         self.tipo_especialidad = TipoEspecialidad()
         self.tipo_especialidad.nombre = "Tipo Especialidad de Prueba"
         self.tipo_especialidad.nivel = "Nivel de Prueba"
         db.session.add(self.tipo_especialidad)
         db.session.commit()
         
-        # 7. Crear Especialidad
         self.especialidad = Especialidad()
         self.especialidad.nombre = "Especialidad de Prueba"
         self.especialidad.tipo_especialidad_id = self.tipo_especialidad.id
@@ -106,7 +95,6 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(orientacion.nombre, "Orientacion1")
         self.assertIsNotNone(orientacion.nombre)
 
-    # Metodos CRUD
     def test_crear_orientacion(self):
         orientacion = self.__nuevoOrientacion()
         OrientacionRepository.crear(orientacion)

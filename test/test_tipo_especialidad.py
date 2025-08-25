@@ -2,10 +2,8 @@ import unittest
 import os
 import sys
 
-# Añadir el directorio raíz del proyecto al path para poder importar desde app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Definimos una versión simplificada de create_app que no importa los recursos
 def create_simple_app(config_name='testing'):
     from flask import Flask
     from app.config import config
@@ -83,13 +81,11 @@ class TipoEspecialidadCase(unittest.TestCase):
         tipo_especialidad = self.__nuevoTipoEspecialidad()
         TipoEspecialidadRepositorio.crear(tipo_especialidad)
 
-        # Borrar y verificar que devuelve el objeto borrado
         borrado = TipoEspecialidadRepositorio.borrar_por_id(tipo_especialidad.id)
         self.assertIsNotNone(borrado)
         self.assertEqual(borrado.nombre, "Cardiología")
         self.assertEqual(borrado.nivel, "Básico")
 
-        # Verificar que ya no existe en la base
         tipo_especialidad_borrado = TipoEspecialidadRepositorio.buscar_por_id(
             tipo_especialidad.id)
         self.assertIsNone(tipo_especialidad_borrado)

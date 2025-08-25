@@ -2,11 +2,9 @@ import unittest
 import os
 import sys
 
-# Añadir el directorio raíz del proyecto al path para poder importar desde app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from flask import current_app
-# Definimos una versión simplificada de create_app que no importa los recursos
 def create_simple_app(config_name='testing'):
     from flask import Flask
     from app.config import config
@@ -78,7 +76,6 @@ class GradoTestCase(unittest.TestCase):
         grado = self.__nuevoGrado()
         GradoRepository.crear(grado)
         resultado = GradoRepository.borrar_por_id(grado.id)
-        # El repositorio devuelve el objeto borrado, no un booleano
         self.assertIsNotNone(resultado)
         grado_borrado = GradoRepository.buscar_por_id(grado.id)
         self.assertIsNone(grado_borrado)

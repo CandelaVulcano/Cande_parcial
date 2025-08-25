@@ -37,7 +37,7 @@ python -m unittest discover test
 - Alonso Adriel
 - Bettiol Giuliana
 - Martinez Jimena
-- Ruiz Alejandro
+- Ruiz Andreola Alejandro
 - Sanchez Juan
 - Velazco Franco
 - Vulcano Candela

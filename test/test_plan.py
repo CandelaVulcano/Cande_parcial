@@ -2,10 +2,8 @@ import unittest
 import os
 import sys
 
-# Añadir el directorio raíz del proyecto al path para poder importar desde app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Definimos una versión simplificada de create_app que no importa los recursos
 def create_simple_app(config_name='testing'):
     from flask import Flask
     from app.config import config
@@ -25,9 +23,7 @@ from app.repositories.plan_repositorio import PlanRepository
 from app.repositories.orientacion_repositorio import OrientacionRepository
 from app import db
 
-
 class PlanTestCase(unittest.TestCase):
-
     def setUp(self):
         os.environ['FLASK_CONTEXT'] = 'testing'
         self.app = create_simple_app('testing')
@@ -90,7 +86,6 @@ class PlanTestCase(unittest.TestCase):
         self.assertIsNone(plan_borrado)
 
     def test_plan_con_orientacion(self):
-        # Primero necesitamos crear dependencias para la orientación
         from app.models.universidad import Universidad
         from app.models.facultad import Facultad
         from app.models.departamento import Departamento
@@ -98,14 +93,12 @@ class PlanTestCase(unittest.TestCase):
         from app.models.especialidad import Especialidad
         from app.models.materia import Materia
         
-        # Crear Universidad
         universidad = Universidad()
         universidad.nombre = "Universidad de Prueba"
         universidad.sigla = "UP"
         db.session.add(universidad)
         db.session.commit()
         
-        # Crear Facultad
         facultad = Facultad()
         facultad.nombre = "Facultad de Prueba"
         facultad.abreviatura = "FP"
@@ -116,14 +109,12 @@ class PlanTestCase(unittest.TestCase):
         db.session.add(facultad)
         db.session.commit()
         
-        # Crear Departamento
         departamento = Departamento()
         departamento.nombre = "Departamento de Prueba"
         departamento.facultad_id = facultad.id
         db.session.add(departamento)
         db.session.commit()
         
-        # Crear Materia
         materia = Materia()
         materia.nombre = "Materia de Prueba"
         materia.codigo = "MP001"
@@ -131,37 +122,31 @@ class PlanTestCase(unittest.TestCase):
         db.session.add(materia)
         db.session.commit()
         
-        # Crear TipoEspecialidad
         tipo_especialidad = TipoEspecialidad()
         tipo_especialidad.nombre = "Tipo Especialidad de Prueba"
         tipo_especialidad.nivel = "Nivel de Prueba"
         db.session.add(tipo_especialidad)
         db.session.commit()
         
-        # Crear Especialidad
         especialidad = Especialidad()
         especialidad.nombre = "Especialidad de Prueba"
         especialidad.tipo_especialidad_id = tipo_especialidad.id
         db.session.add(especialidad)
         db.session.commit()
         
-        # Crear una orientación
         orientacion = Orientacion()
         orientacion.nombre = "Orientación de Prueba"
         orientacion.especialidad_id = especialidad.id
-        orientacion.plan_id = 1  # Esto se actualizará después
+        orientacion.plan_id = 1 
         orientacion.materia_id = materia.id
         OrientacionRepository.crear(orientacion)
 
-        # Crear un plan asociado a la orientación
         plan = self.__nuevoPlan()
         PlanRepository.crear(plan)
         
-        # Actualizar la orientación con el plan correcto
         orientacion.plan_id = plan.id
         OrientacionRepository.actualizar(orientacion)
 
-        # Verificar que la relación se guardó correctamente
         plan_encontrado = PlanRepository.buscar_por_id(plan.id)
         self.assertIsNotNone(plan_encontrado)
 
@@ -172,7 +157,6 @@ class PlanTestCase(unittest.TestCase):
         plan.fecha_fin = "2027-12-31"
         plan.observacion = "Plan de estudios actualizado"
         return plan
-
 
 if __name__ == "__main__":
     unittest.main()

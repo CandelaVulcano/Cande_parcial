@@ -6,7 +6,6 @@ from app.models.alumno import Alumno
 from app.services.alumno_service import AlumnoService
 from app.repositories.alumno_repositorio import AlumnoRepository
 
-# Importa las funciones de ayuda refactorizadas
 from metodos_de_prueba import crear_alumno, crear_tipo_documento
 
 class AlumnoTestCase(unittest.TestCase):
@@ -18,8 +17,6 @@ class AlumnoTestCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
 
-        # DRY: Crear dependencias una sola vez en setUp si son comunes a varios tests
-        # KISS: Solo creamos lo esencial para que los alumnos puedan ser creados.
         self.tipo_documento_dni = crear_tipo_documento(nombre="DNI")
         db.session.add(self.tipo_documento_dni)
         db.session.commit()
@@ -37,14 +34,12 @@ class AlumnoTestCase(unittest.TestCase):
 
     def test_creacion_instancia_alumno(self):
         """Verifica que se puede crear una instancia de Alumno correctamente."""
-        # KISS: Testea solo la creación del objeto en memoria, no la persistencia.
         alumno = crear_alumno(
             apellido="Perez",
             nombre="Juan",
             nro_documento="12345678",
             tipo_documento_id=self.tipo_documento_dni_id,
             sexo="M"
-            # Otros campos usan valores por defecto de la función crear_alumno
         )
         self.assertIsNotNone(alumno)
         self.assertEqual(alumno.nombre, "Juan")
@@ -55,8 +50,6 @@ class AlumnoTestCase(unittest.TestCase):
 
     def test_crear_alumno_persistencia(self):
         """Verifica que un alumno puede ser creado y persistido en la DB."""
-        # YAGNI: No testees el servicio si solo quieres probar el repositorio.
-        # KISS: Este test se enfoca en la persistencia a través del repositorio.
         alumno = crear_alumno(
             apellido="Gomez",
             nombre="Maria",
@@ -69,7 +62,6 @@ class AlumnoTestCase(unittest.TestCase):
         self.assertIsNotNone(alumno_creado.id)
         self.assertEqual(alumno_creado.nombre, "Maria")
 
-        # Verifica que se puede recuperar de la DB
         alumno_recuperado = AlumnoRepository.buscar_por_id(alumno_creado.id)
         self.assertIsNotNone(alumno_recuperado)
         self.assertEqual(alumno_recuperado.nombre, "Maria")
@@ -77,8 +69,6 @@ class AlumnoTestCase(unittest.TestCase):
 
     def test_buscar_todos_alumnos(self):
         """Verifica que se pueden buscar todos los alumnos."""
-        # DRY: Usa las funciones de creación para generar datos de prueba.
-        # KISS: El test es simple y directo, solo verifica la función de búsqueda.
         alumno1 = crear_alumno(nombre="Ana", apellido="Lopez", nro_documento="111", tipo_documento_id=self.tipo_documento_dni_id)
         alumno2 = crear_alumno(nombre="Pedro", apellido="Diaz", nro_documento="222", tipo_documento_id=self.tipo_documento_dni_id)
         
@@ -102,7 +92,6 @@ class AlumnoTestCase(unittest.TestCase):
         self.assertEqual(alumno_actualizado.nombre, "Actualizado")
         self.assertEqual(alumno_actualizado.sexo, "F")
         
-        # Verifica que el cambio se refleje en la DB
         alumno_recuperado = AlumnoRepository.buscar_por_id(alumno.id)
         self.assertEqual(alumno_recuperado.nombre, "Actualizado")
         self.assertEqual(alumno_recuperado.sexo, "F")
@@ -114,11 +103,10 @@ class AlumnoTestCase(unittest.TestCase):
         alumno_id = alumno.id
 
         eliminado = AlumnoRepository.borrar_por_id(alumno_id)
-        self.assertIsNotNone(eliminado) # Debería devolver el objeto borrado
+        self.assertIsNotNone(eliminado)
 
         alumno_recuperado = AlumnoRepository.buscar_por_id(alumno_id)
-        self.assertIsNone(alumno_recuperado) # Ya no debería existir en la DB
+        self.assertIsNone(alumno_recuperado)
 
 if __name__ == '__main__':
     unittest.main()
-#REVISAR CON MUCHA ATENCION ESTO ULTIMO, NO DEBERIA SER NECESARIO PORQUE NO LO TIENE NINGUN GRUPO
