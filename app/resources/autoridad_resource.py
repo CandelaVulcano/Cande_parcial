@@ -1,6 +1,8 @@
+
 from flask import Blueprint, request, jsonify
 from app.services.autoridad_service import AutoridadService
 from app.mapping.autoridad_mapping import AutoridadMapping
+from app.validators.autoridad_validator import AutoridadValidator
 
 autoridad_bp = Blueprint('autoridad', __name__)
 autoridad_mapping = AutoridadMapping()
@@ -20,6 +22,9 @@ def read_by_id(id: int):
 @autoridad_bp.route('/autoridad', methods=['POST'])
 def create():
     data = request.get_json()
+    errors = AutoridadValidator.validate_autoridad(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         nueva_autoridad = AutoridadService.crear_autoridad(data)
         return autoridad_mapping.dump(nueva_autoridad), 201
@@ -29,6 +34,9 @@ def create():
 @autoridad_bp.route('/autoridad/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
+    errors = AutoridadValidator.validate_autoridad(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         autoridad_actualizada = AutoridadService.actualizar_autoridad(id, data)
         if not autoridad_actualizada:

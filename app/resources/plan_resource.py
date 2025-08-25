@@ -1,6 +1,8 @@
+
 from flask import Blueprint, request, jsonify
 from app.services.plan_service import PlanService
 from app.mapping.plan_mapping import PlanMapping
+from app.validators.plan_validator import PlanValidator
 
 plan_bp = Blueprint('plan', __name__)
 plan_mapping = PlanMapping()
@@ -20,6 +22,9 @@ def read_by_id(id: int):
 @plan_bp.route('/plan', methods=['POST'])
 def create():
     data = request.get_json()
+    errors = PlanValidator.validate_plan(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         nuevo_plan = PlanService.crear_plan(data)
         return plan_mapping.dump(nuevo_plan), 201
@@ -29,6 +34,9 @@ def create():
 @plan_bp.route('/plan/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
+    errors = PlanValidator.validate_plan(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         plan_actualizado = PlanService.actualizar_plan(id, data)
         if not plan_actualizado:

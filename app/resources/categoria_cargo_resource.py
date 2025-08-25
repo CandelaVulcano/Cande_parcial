@@ -1,6 +1,8 @@
+
 from flask import Blueprint, request, jsonify
 from app.services.categoria_cargo_service import CategoriaCargoService
 from app.mapping.categoria_cargo_mapping import CategoriaCargoMapping
+from app.validators.categoria_cargo_validator import CategoriaCargoValidator
 
 categoria_cargo_bp = Blueprint('categoria_cargo', __name__)
 categoria_cargo_mapping = CategoriaCargoMapping()
@@ -20,9 +22,11 @@ def read_by_id(id: int):
 @categoria_cargo_bp.route('/categoria_cargo', methods=['POST'])
 def create():
     data = request.get_json()
+    errors = CategoriaCargoValidator.validate_categoria_cargo(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
-        nueva_categoria_cargo = CategoriaCargoService.crear_categoria_cargo(
-            data)
+        nueva_categoria_cargo = CategoriaCargoService.crear_categoria_cargo(data)
         return categoria_cargo_mapping.dump(nueva_categoria_cargo), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
@@ -30,9 +34,11 @@ def create():
 @categoria_cargo_bp.route('/categoria_cargo/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
+    errors = CategoriaCargoValidator.validate_categoria_cargo(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
-        categoria_cargo_actualizada = CategoriaCargoService.actualizar_categoria_cargo(
-            id, data)
+        categoria_cargo_actualizada = CategoriaCargoService.actualizar_categoria_cargo(id, data)
         if not categoria_cargo_actualizada:
             return jsonify({"error": "Categoria de cargo no encontrada"}), 404
         return categoria_cargo_mapping.dump(categoria_cargo_actualizada), 200

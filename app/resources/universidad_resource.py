@@ -1,9 +1,8 @@
+
 from flask import jsonify, Blueprint, request
 from app.services import UniversidadService
-from app.mapping import UniversidadMapping
-from markupsafe import escape
-
-from app.validators import validate_with
+from app.mapping.universidad_mapping import UniversidadMapping
+from app.validators.universidad_validator import UniversidadValidator
 
 universidad_bp = Blueprint('universidad', __name__)
 universidad_mapping = UniversidadMapping()
@@ -23,8 +22,11 @@ def buscar_por_id(id: int):
 
 @universidad_bp.route('/universidad', methods=['POST'])
 def crear_universidad():
-    universidad_data = sanitize_universidad_input(request)
-    universidad = UniversidadService.crear(universidad_data)
+    data = request.get_json()
+    errors = UniversidadValidator.validate_universidad(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
+    universidad = UniversidadService.crear(data)
     return universidad_mapping.dump(universidad), 201
 
 
@@ -34,15 +36,15 @@ def eliminar_universidad(id: int):
     return jsonify('Universidad eliminada exitosamente'), 200
 
 
+
 @universidad_bp.route('/universidad/<hashid:id>', methods=['PUT'])
-@validate_with(UniversidadMapping)
-def actualizar_universidad(universidad_data, id: int):
-    universidad = UniversidadService.actualizar(id, universidad_data)
+def actualizar_universidad(id: int):
+    data = request.get_json()
+    errors = UniversidadValidator.validate_universidad(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
+    universidad = UniversidadService.actualizar(id, data)
     return universidad_mapping.dump(universidad), 200
 
 
-def sanitize_universidad_input(request):
-    universidad_data = universidad_mapping.load(request.json())
-    universidad_data.nombre = escape(universidad_data.nombre)
-    universidad_data.sigla = escape(universidad_data.sigla)
-    return universidad_data
+

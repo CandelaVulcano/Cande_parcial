@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.services.area_service import AreaService
 from app.mapping.area_mapping import AreaMapping
+from app.validators.area_validator import AreaValidator
 
 area_bp = Blueprint('area', __name__)
 area_mapping = AreaMapping()
@@ -20,6 +21,9 @@ def read_by_id(id: int):
 @area_bp.route('/area', methods=['POST'])
 def create():
     data = request.get_json()
+    errors = AreaValidator.validate_area(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         nueva_area = AreaService.crear_area(data)
         return area_mapping.dump(nueva_area), 201
@@ -29,6 +33,9 @@ def create():
 @area_bp.route('/area/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
+    errors = AreaValidator.validate_area(data)
+    if errors:
+        return jsonify({'errors': errors}), 400
     try:
         area_actualizada = AreaService.actualizar_area(id, data)
         if not area_actualizada:
