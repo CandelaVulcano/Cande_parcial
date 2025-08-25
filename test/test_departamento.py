@@ -76,7 +76,7 @@ class AppTestCase(unittest.TestCase):
         self.assertIsNotNone(departamento)
         self.assertIsNotNone(departamento.id)
         self.assertGreaterEqual(departamento.id, 1)
-        self.assertEqual(departamento.nombre, "ofina de alumnos")
+        self.assertEqual(departamento.nombre, "oficina de alumnos")
     
     def test_buscar_por_id(self):
         departamento = Departamento()
@@ -87,7 +87,7 @@ class AppTestCase(unittest.TestCase):
         db.session.commit()
         encontrado = Departamento.query.get(departamento.id)
         self.assertIsNotNone(encontrado)
-        self.assertEqual(encontrado.nombre, "ofina de alumnos")
+        self.assertEqual(encontrado.nombre, "oficina de alumnos")
 
     def test_buscar_todos(self):
         departamento1 = Departamento()
