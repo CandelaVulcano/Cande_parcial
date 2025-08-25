@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.services.area_service import AreaService
 from app.mapping.area_mapping import AreaMapping
-from app.validators.area_validator import AreaValidator
+from app.validators.area_validator import validate_area
 
 area_bp = Blueprint('area', __name__)
 area_mapping = AreaMapping()
@@ -21,9 +21,6 @@ def read_by_id(id: int):
 @area_bp.route('/area', methods=['POST'])
 def create():
     data = request.get_json()
-    errors = AreaValidator.validate_area(data)
-    if errors:
-        return jsonify({'errors': errors}), 400
     try:
         nueva_area = AreaService.crear_area(data)
         return area_mapping.dump(nueva_area), 201
@@ -33,16 +30,15 @@ def create():
 @area_bp.route('/area/<hashid:id>', methods=['PUT'])
 def update(id: int):
     data = request.get_json()
-    errors = AreaValidator.validate_area(data)
+    errors = validate_area(data)
     if errors:
-        return jsonify({'errors': errors}), 400
-    try:
-        area_actualizada = AreaService.actualizar_area(id, data)
-        if not area_actualizada:
-            return jsonify({"error": "Área no encontrada"}), 404
-        return area_mapping.dump(area_actualizada), 200
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"errors": errors}), 400
+    
+    area_actualizado = AreaService.actualizar_area(id, data)
+    if not area_actualizado:
+        return jsonify({"error": "Area no encontrada"}), 404
+    
+    return area_mapping.dump(area_actualizado), 200
 
 @area_bp.route('/area/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
