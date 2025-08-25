@@ -1,17 +1,38 @@
 import unittest
 import os
+import sys
+
+# Añadir el directorio raíz del proyecto al path para poder importar desde app
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Definimos una versión simplificada de create_app que no importa los recursos
+def create_simple_app(config_name='testing'):
+    from flask import Flask
+    from app.config import config
+    
+    app = Flask(__name__)
+    config_class = config.get(config_name, config['default'])
+    app.config.from_object(config_class)
+    from app import db
+    db.init_app(app)
+    
+    return app
+
 from flask import current_app
-from app import create_app
 from app.models.tipo_dedicacion import TipoDedicacion
+from app import db
 
 class TipoDedicacionTestCase(unittest.TestCase):
     def setUp(self):
         os.environ['FLASK_CONTEXT'] = 'testing'
-        self.app = create_app()
+        self.app = create_simple_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
+        db.create_all()
         
     def tearDown(self):
+        db.session.remove()
+        db.drop_all()
         self.app_context.pop()
         
     def test_tipodedicacion_creation(self):

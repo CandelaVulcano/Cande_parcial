@@ -1,16 +1,33 @@
 import unittest
 import os
+import sys
+
+# Añadir el directorio raíz del proyecto al path para poder importar desde app
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Definimos una versión simplificada de create_app que no importa los recursos
+def create_simple_app(config_name='testing'):
+    from flask import Flask
+    from app.config import config
+    
+    app = Flask(__name__)
+    config_class = config.get(config_name, config['default'])
+    app.config.from_object(config_class)
+    from app import db
+    db.init_app(app)
+    
+    return app
+
 from flask import current_app
-from app import create_app
-from app.models import TipoEspecialidad
-from app.services import TipoEspecialidadService
+from app.models.tipo_especialidad import TipoEspecialidad
+from app.repositories.tipo_especialidad_repositorio import TipoEspecialidadRepositorio
 from app import db
 
 
 class TipoEspecialidadCase(unittest.TestCase):
     def setUp(self):
-        os.environ['FLASK_CONTEXT'] = 'ing'
-        self.app = create_app()
+        os.environ['FLASK_CONTEXT'] = 'testing'
+        self.app = create_simple_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
@@ -20,60 +37,60 @@ class TipoEspecialidadCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def _tipo_especialidad_creation(self):
+    def test_tipo_especialidad_creation(self):
         tipo_especialidad = self.__nuevoTipoEspecialidad()
         self.assertIsNotNone(tipo_especialidad)
         self.assertEqual(tipo_especialidad.nombre, "Cardiología")
         self.assertEqual(tipo_especialidad.nivel, "Básico")
 
-    def _crear_tipo_especialidad(self):
+    def test_crear_tipo_especialidad(self):
         tipo_especialidad = self.__nuevoTipoEspecialidad()
-        TipoEspecialidadService.crear_tipo_especialidad(tipo_especialidad)
+        TipoEspecialidadRepositorio.crear(tipo_especialidad)
         self.assertIsNotNone(tipo_especialidad)
         self.assertIsNotNone(tipo_especialidad.id)
         self.assertGreaterEqual(tipo_especialidad.id, 1)
         self.assertEqual(tipo_especialidad.nombre, "Cardiología")
         self.assertEqual(tipo_especialidad.nivel, "Básico")
 
-    def _tipo_especialidad_busqueda(self):
+    def test_tipo_especialidad_busqueda(self):
         tipo_especialidad = self.__nuevoTipoEspecialidad()
-        TipoEspecialidadService.crear_tipo_especialidad(tipo_especialidad)
-        encontrado = TipoEspecialidadService.buscar_por_id(
+        TipoEspecialidadRepositorio.crear(tipo_especialidad)
+        encontrado = TipoEspecialidadRepositorio.buscar_por_id(
             tipo_especialidad.id)
         self.assertIsNotNone(encontrado)
         self.assertEqual(encontrado.nombre, "Cardiología")
         self.assertEqual(encontrado.nivel, "Básico")
 
-    def _buscar_tipos_especialidad(self):
+    def test_buscar_tipos_especialidad(self):
         tipo_especialidad1 = self.__nuevoTipoEspecialidad("Cardiología")
         tipo_especialidad2 = self.__nuevoTipoEspecialidad("Neurología")
-        TipoEspecialidadService.crear_tipo_especialidad(tipo_especialidad1)
-        TipoEspecialidadService.crear_tipo_especialidad(tipo_especialidad2)
-        tipos_especialidad = TipoEspecialidadService.buscar_todos()
+        TipoEspecialidadRepositorio.crear(tipo_especialidad1)
+        TipoEspecialidadRepositorio.crear(tipo_especialidad2)
+        tipos_especialidad = TipoEspecialidadRepositorio.buscar_todos()
         self.assertIsNotNone(tipos_especialidad)
         self.assertEqual(len(tipos_especialidad), 2)
 
-    def _actualizar_tipo_especialidad(self):
+    def test_actualizar_tipo_especialidad(self):
         tipo_especialidad = self.__nuevoTipoEspecialidad()
-        TipoEspecialidadService.crear_tipo_especialidad(tipo_especialidad)
+        TipoEspecialidadRepositorio.crear(tipo_especialidad)
         tipo_especialidad.nombre = "Cardiología Avanzada"
         tipo_especialidad.nivel = "Avanzado"
-        tipo_especialidad_actualizado = TipoEspecialidadService.actualizar_tipo_especialidad(
-            tipo_especialidad.id, tipo_especialidad)
+        tipo_especialidad_actualizado = TipoEspecialidadRepositorio.actualizar(
+            tipo_especialidad)
         self.assertIsNotNone(tipo_especialidad_actualizado)
 
-    def _borrar_tipo_especialidad(self):
+    def test_borrar_tipo_especialidad(self):
         tipo_especialidad = self.__nuevoTipoEspecialidad()
-        TipoEspecialidadService.crear_tipo_especialidad(tipo_especialidad)
+        TipoEspecialidadRepositorio.crear(tipo_especialidad)
 
         # Borrar y verificar que devuelve el objeto borrado
-        borrado = TipoEspecialidadService.borrar_por_id(tipo_especialidad.id)
+        borrado = TipoEspecialidadRepositorio.borrar_por_id(tipo_especialidad.id)
         self.assertIsNotNone(borrado)
         self.assertEqual(borrado.nombre, "Cardiología")
         self.assertEqual(borrado.nivel, "Básico")
 
         # Verificar que ya no existe en la base
-        tipo_especialidad_borrado = TipoEspecialidadService.buscar_por_id(
+        tipo_especialidad_borrado = TipoEspecialidadRepositorio.buscar_por_id(
             tipo_especialidad.id)
         self.assertIsNone(tipo_especialidad_borrado)
 
@@ -83,5 +100,6 @@ class TipoEspecialidadCase(unittest.TestCase):
         tipo_especialidad.nivel = "Básico"
         return tipo_especialidad
 
-    if __name__ == '__main__':
-        unittest.main()
+
+if __name__ == '__main__':
+    unittest.main()

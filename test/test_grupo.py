@@ -1,16 +1,33 @@
 import unittest
-from flask import current_app
-from app import create_app
-from app.models import Grupo
-from app.services import GrupoService
-from app import db
 import os
+import sys
+
+# Añadir el directorio raíz del proyecto al path para poder importar desde app
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from flask import current_app
+# Definimos una versión simplificada de create_app que no importa los recursos
+def create_simple_app(config_name='testing'):
+    from flask import Flask
+    from app.config import config
+    
+    app = Flask(__name__)
+    config_class = config.get(config_name, config['default'])
+    app.config.from_object(config_class)
+    from app import db
+    db.init_app(app)
+    
+    return app
+
+from app.models.grupo import Grupo
+from app.repositories.grupo_repositorio import GrupoRepository
+from app import db
 
 class AppTestCase(unittest.TestCase):
 
     def setUp(self):
         os.environ['FLASK_CONTEXT'] = 'testing'
-        self.app = create_app()
+        self.app = create_simple_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
@@ -28,7 +45,7 @@ class AppTestCase(unittest.TestCase):
 
     def test_crear_grupo(self):
         grupo = self.__nuevoGrupo()
-        GrupoService.crear_grupo(grupo)
+        GrupoRepository.crear(grupo)
         self.assertIsNotNone(grupo)
         self.assertIsNotNone(grupo.id)
         self.assertGreaterEqual(grupo.id, 1)
@@ -36,33 +53,32 @@ class AppTestCase(unittest.TestCase):
         
     def test_grupo_busqueda(self):
         grupo = self.__nuevoGrupo()
-        GrupoService.crear_grupo(grupo)
-        GrupoService.buscar_por_id(grupo.id)
-        self.assertIsNotNone(grupo)
-        self.assertEqual(grupo.nombre, "Grupo1")
+        GrupoRepository.crear(grupo)
+        grupo_encontrado = GrupoRepository.buscar_por_id(grupo.id)
+        self.assertIsNotNone(grupo_encontrado)
+        self.assertEqual(grupo_encontrado.nombre, "Grupo1")
     
     def test_buscar_grupos(self):
         grupo1 = self.__nuevoGrupo()
         grupo2 = self.__nuevoGrupo()
-        GrupoService.crear_grupo(grupo1)
-        GrupoService.crear_grupo(grupo2)
-        grupos = GrupoService.buscar_todos()
+        GrupoRepository.crear(grupo1)
+        GrupoRepository.crear(grupo2)
+        grupos = GrupoRepository.buscar_todos()
         self.assertIsNotNone(grupos)
         self.assertEqual(len(grupos), 2)
         
     def test_actualizar_grupo(self):
         grupo = self.__nuevoGrupo()
-        GrupoService.crear_grupo(grupo)
+        GrupoRepository.crear(grupo)
         grupo.nombre = "Grupo2"
-        grupo_actualizado = GrupoService.actualizar_grupo(grupo.id, grupo)
+        grupo_actualizado = GrupoRepository.actualizar(grupo)
         self.assertEqual(grupo_actualizado.nombre, "Grupo2")
         
     def test_borrar_grupo(self):
         grupo = self.__nuevoGrupo()
-        GrupoService.crear_grupo(grupo)
-        db.session.delete(grupo)
-        db.session.commit()
-        grupo_borrado = GrupoService.borrar_por_id(grupo.id)
+        GrupoRepository.crear(grupo)
+        GrupoRepository.borrar_por_id(grupo.id)
+        grupo_borrado = GrupoRepository.buscar_por_id(grupo.id)
         self.assertIsNone(grupo_borrado)
 
     def __nuevoGrupo(self):

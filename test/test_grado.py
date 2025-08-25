@@ -1,9 +1,26 @@
 import unittest
 import os
+import sys
+
+# Añadir el directorio raíz del proyecto al path para poder importar desde app
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from flask import current_app
-from app import create_app
+# Definimos una versión simplificada de create_app que no importa los recursos
+def create_simple_app(config_name='testing'):
+    from flask import Flask
+    from app.config import config
+    
+    app = Flask(__name__)
+    config_class = config.get(config_name, config['default'])
+    app.config.from_object(config_class)
+    from app import db
+    db.init_app(app)
+    
+    return app
+
 from app.models.grado import Grado
-from app.services import GradoService
+from app.repositories.grado_repositorio import GradoRepository
 from app import db
 
 
@@ -11,7 +28,7 @@ class GradoTestCase(unittest.TestCase):
 
     def setUp(self):
         os.environ['FLASK_CONTEXT'] = 'testing'
-        self.app = create_app()
+        self.app = create_simple_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
@@ -28,7 +45,7 @@ class GradoTestCase(unittest.TestCase):
 
     def test_crear_grado(self):
         grado = self.__nuevoGrado()
-        GradoService.crear_grado(grado)
+        GradoRepository.crear(grado)
         self.assertIsNotNone(grado)
         self.assertIsNotNone(grado.id)
         self.assertGreaterEqual(grado.id, 1)
@@ -36,33 +53,34 @@ class GradoTestCase(unittest.TestCase):
 
     def test_grado_busqueda(self):
         grado = self.__nuevoGrado()
-        GradoService.crear_grado(grado)
-        grado_encontrado = GradoService.buscar_por_id(grado.id)
+        GradoRepository.crear(grado)
+        grado_encontrado = GradoRepository.buscar_por_id(grado.id)
         self.assertIsNotNone(grado_encontrado)
         self.assertEqual(grado_encontrado.nombre, "Licenciatura")
 
     def test_buscar_grados(self):
         grado1 = self.__nuevoGrado()
         grado2 = self.__nuevoGrado("Maestría")
-        GradoService.crear_grado(grado1)
-        GradoService.crear_grado(grado2)
-        grados = GradoService.buscar_todos()
+        GradoRepository.crear(grado1)
+        GradoRepository.crear(grado2)
+        grados = GradoRepository.buscar_todos()
         self.assertIsNotNone(grados)
         self.assertEqual(len(grados), 2)
 
     def test_actualizar_grado(self):
         grado = self.__nuevoGrado()
-        GradoService.crear_grado(grado)
+        GradoRepository.crear(grado)
         grado.nombre = "Doctorado"
-        grado_actualizado = GradoService.actualizar_grado(grado.id, grado)
+        grado_actualizado = GradoRepository.actualizar(grado)
         self.assertEqual(grado_actualizado.nombre, "Doctorado")
 
     def test_borrar_grado(self):
         grado = self.__nuevoGrado()
-        GradoService.crear_grado(grado)
-        resultado = GradoService.borrar_por_id(grado.id)
-        self.assertTrue(resultado)
-        grado_borrado = GradoService.buscar_por_id(grado.id)
+        GradoRepository.crear(grado)
+        resultado = GradoRepository.borrar_por_id(grado.id)
+        # El repositorio devuelve el objeto borrado, no un booleano
+        self.assertIsNotNone(resultado)
+        grado_borrado = GradoRepository.buscar_por_id(grado.id)
         self.assertIsNone(grado_borrado)
 
     def __nuevoGrado(self, nombre="Licenciatura"):

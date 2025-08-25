@@ -11,12 +11,11 @@ db = SQLAlchemy()
 ma = Marshmallow()
 
 
-def create_app() -> None:
-    config_name = os.getenv('FLASK_ENV')
+def create_app(config_name=None) -> None:
+    config_name = config_name or os.getenv('FLASK_ENV') or 'development'
     app = Flask(__name__)
-    f = config.factory(config_name if config_name else 'development')
-    app.config.from_object(f)
-    f.init_app(app)
+    config_class = config.get(config_name, config['default'])
+    app.config.from_object(config_class)
     db.init_app(app)
     ma.init_app(app)
 

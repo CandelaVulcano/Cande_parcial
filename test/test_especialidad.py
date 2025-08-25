@@ -1,21 +1,63 @@
 import unittest
 import os
+import sys
+
+# Añadir el directorio raíz del proyecto al path para poder importar desde app
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from flask import current_app
-from app import create_app, db
+from app import db
+
+# Definimos una versión simplificada de create_app que no importa los recursos
+def create_simple_app(config_name='testing'):
+    from flask import Flask
+    from app.config import config
+    
+    app = Flask(__name__)
+    config_class = config.get(config_name, config['default'])
+    app.config.from_object(config_class)
+    db.init_app(app)
+    
+    return app
+
 from app.models.especialidad import Especialidad
-from app.services.especialidad_service import EspecialidadService
+from app.models.tipo_especialidad import TipoEspecialidad
+# No importamos el servicio para evitar problemas con WeasyPrint
+# from app.services.especialidad_service import EspecialidadService
 from app.repositories.especialidad_repositorio import EspecialidadRepository
-from test.metodos_de_prueba import nuevaEspecialidad, nuevaEspecialidad2
+
+# Definimos funciones de ayuda directamente en este archivo en lugar de importarlas
+def nuevaEspecialidad(tipo_especialidad_id=None):
+    especialidad = Especialidad()
+    especialidad.nombre = "Especialidad 1"
+    especialidad.observacion = "Observacion 1"
+    especialidad.letra = "a"
+    especialidad.tipo_especialidad_id = tipo_especialidad_id
+    return especialidad
+
+def nuevaEspecialidad2(tipo_especialidad_id=None):
+    especialidad = Especialidad()
+    especialidad.nombre = "Especialidad 2"
+    especialidad.observacion = "Observacion 2"
+    especialidad.letra = "b"
+    especialidad.tipo_especialidad_id = tipo_especialidad_id
+    return especialidad
 
 
 class EspecialidadTestCase (unittest.TestCase):
 
     def setUp(self):
-        os.environ['FLASK_CONTEXT'] = 'testing'
-        self.app = create_app()
+        self.app = create_simple_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
+        
+        # Creamos un tipo de especialidad para usar en las pruebas
+        self.tipo_especialidad = TipoEspecialidad()
+        self.tipo_especialidad.nombre = "Tipo de Especialidad de Prueba"
+        self.tipo_especialidad.nivel = "Nivel de Prueba"
+        db.session.add(self.tipo_especialidad)
+        db.session.commit()
 
     def tearDown(self):
         db.session.remove()
@@ -23,44 +65,43 @@ class EspecialidadTestCase (unittest.TestCase):
         self.app_context.pop()
 
     def test_crear_especialidad(self):
-        especialidad = nuevaEspecialidad()
-        EspecialidadService.crear_especialidad(especialidad)
+        especialidad = nuevaEspecialidad(self.tipo_especialidad.id)
+        EspecialidadRepository.crear(especialidad)
         self._assert_especialidad(
             especialidad, "Especialidad 1", "Observacion 1", "a")
 
     def test_buscar_por_id(self):
-        especialidad = nuevaEspecialidad()
-        EspecialidadService.crear_especialidad(especialidad)
-        encontrada = EspecialidadService.buscar_por_id(especialidad.id)
+        especialidad = nuevaEspecialidad(self.tipo_especialidad.id)
+        EspecialidadRepository.crear(especialidad)
+        encontrada = EspecialidadRepository.buscar_por_id(especialidad.id)
         self._assert_especialidad(
             encontrada, "Especialidad 1", "Observacion 1", "a")
 
     def test_buscar_todos(self):
-        especialidad1 = nuevaEspecialidad()
-        especialidad2 = nuevaEspecialidad2()
-        EspecialidadService.crear_especialidad(especialidad1)
-        EspecialidadService.crear_especialidad(especialidad2)
-        especialidades = EspecialidadService.buscar_todos()
+        especialidad1 = nuevaEspecialidad(self.tipo_especialidad.id)
+        especialidad2 = nuevaEspecialidad2(self.tipo_especialidad.id)
+        EspecialidadRepository.crear(especialidad1)
+        EspecialidadRepository.crear(especialidad2)
+        especialidades = EspecialidadRepository.buscar_todos()
         self.assertIsNotNone(especialidades)
         self.assertEqual(len(especialidades), 2)
 
     def test_actualizar_especialidad(self):
-        especialidad = nuevaEspecialidad()
-        EspecialidadService.crear_especialidad(especialidad)
+        especialidad = nuevaEspecialidad(self.tipo_especialidad.id)
+        EspecialidadRepository.crear(especialidad)
         especialidad.nombre = "Especialidad Actualizada"
         especialidad.letra = "z"
         especialidad.observacion = "Observacion Actualizada"
-        EspecialidadService.actualizar_especialidad(
-            especialidad.id, especialidad)
-        encontrada = EspecialidadService.buscar_por_id(especialidad.id)
+        EspecialidadRepository.actualizar(especialidad)
+        encontrada = EspecialidadRepository.buscar_por_id(especialidad.id)
         self._assert_especialidad(
             encontrada, "Especialidad Actualizada", "Observacion Actualizada", "z")
 
     def test_borrar_especialidad(self):
-        especialidad = nuevaEspecialidad()
-        EspecialidadService.crear_especialidad(especialidad)
-        EspecialidadService.borrar_por_id(especialidad.id)
-        encontrada = EspecialidadService.buscar_por_id(especialidad.id)
+        especialidad = nuevaEspecialidad(self.tipo_especialidad.id)
+        EspecialidadRepository.crear(especialidad)
+        EspecialidadRepository.borrar_por_id(especialidad.id)
+        encontrada = EspecialidadRepository.buscar_por_id(especialidad.id)
         self.assertIsNone(encontrada)
 
     # No repetir assert

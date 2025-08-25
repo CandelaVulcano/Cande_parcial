@@ -3,8 +3,8 @@ from io import BytesIO
 
 from app.models import Alumno
 from app.repositories import AlumnoRepository
-from app.services import DOCXDocument, PDFDocument, ODTDocument
-from app.services.documentos_office_service import Document, obtener_tipo_documento
+# Importamos directamente desde el módulo específico para evitar la importación circular
+from app.services.documentos_office_service import Document, obtener_tipo_documento, DOCXDocument, PDFDocument, ODTDocument
 
 class AlumnoService:
 

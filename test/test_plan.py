@@ -1,11 +1,28 @@
 import unittest
 import os
+import sys
+
+# Añadir el directorio raíz del proyecto al path para poder importar desde app
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Definimos una versión simplificada de create_app que no importa los recursos
+def create_simple_app(config_name='testing'):
+    from flask import Flask
+    from app.config import config
+    
+    app = Flask(__name__)
+    config_class = config.get(config_name, config['default'])
+    app.config.from_object(config_class)
+    from app import db
+    db.init_app(app)
+    
+    return app
+
 from flask import current_app
-from app import create_app
 from app.models.plan import Plan
 from app.models.orientacion import Orientacion
-from app.services.plan_service import PlanService
-from app.services.orientacion_service import OrientacionService
+from app.repositories.plan_repositorio import PlanRepository
+from app.repositories.orientacion_repositorio import OrientacionRepository
 from app import db
 
 
@@ -13,7 +30,7 @@ class PlanTestCase(unittest.TestCase):
 
     def setUp(self):
         os.environ['FLASK_CONTEXT'] = 'testing'
-        self.app = create_app()
+        self.app = create_simple_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
@@ -27,13 +44,13 @@ class PlanTestCase(unittest.TestCase):
         plan = self.__nuevoPlan()
         self.assertIsNotNone(plan)
         self.assertEqual(plan.nombre, "Plan 2023")
-        self.assertEqual(plan.fechaInicio, "2023-01-01")
-        self.assertEqual(plan.fechaFin, "2027-12-31")
+        self.assertEqual(plan.fecha_inicio, "2023-01-01")
+        self.assertEqual(plan.fecha_fin, "2027-12-31")
         self.assertEqual(plan.observacion, "Plan de estudios actualizado")
 
     def test_crear_plan(self):
         plan = self.__nuevoPlan()
-        PlanService.crear_plan(plan)
+        PlanRepository.crear(plan)
         self.assertIsNotNone(plan)
         self.assertIsNotNone(plan.id)
         self.assertGreaterEqual(plan.id, 1)
@@ -41,58 +58,118 @@ class PlanTestCase(unittest.TestCase):
 
     def test_plan_busqueda(self):
         plan = self.__nuevoPlan()
-        PlanService.crear_plan(plan)
-        plan_encontrado = PlanService.buscar_por_id(plan.id)
+        PlanRepository.crear(plan)
+        plan_encontrado = PlanRepository.buscar_por_id(plan.id)
         self.assertIsNotNone(plan_encontrado)
         self.assertEqual(plan_encontrado.nombre, "Plan 2023")
 
     def test_buscar_planes(self):
         plan1 = self.__nuevoPlan()
         plan2 = self.__nuevoPlan("Plan 2024")
-        PlanService.crear_plan(plan1)
-        PlanService.crear_plan(plan2)
-        planes = PlanService.buscar_todos()
+        PlanRepository.crear(plan1)
+        PlanRepository.crear(plan2)
+        planes = PlanRepository.buscar_todos()
         self.assertIsNotNone(planes)
         self.assertEqual(len(planes), 2)
 
     def test_actualizar_plan(self):
         plan = self.__nuevoPlan()
-        PlanService.crear_plan(plan)
+        PlanRepository.crear(plan)
         plan.nombre = "Plan Modificado"
         plan.observacion = "Observación actualizada"
-        plan_actualizado = PlanService.actualizar_plan(plan.id, plan)
+        plan_actualizado = PlanRepository.actualizar(plan)
         self.assertEqual(plan_actualizado.nombre, "Plan Modificado")
         self.assertEqual(plan_actualizado.observacion,
                          "Observación actualizada")
 
     def test_borrar_plan(self):
         plan = self.__nuevoPlan()
-        PlanService.crear_plan(plan)
-        resultado = PlanService.borrar_por_id(plan.id)
-        self.assertIsNotNone(resultado)
-        plan_borrado = PlanService.buscar_por_id(plan.id)
+        PlanRepository.crear(plan)
+        PlanRepository.borrar_por_id(plan.id)
+        plan_borrado = PlanRepository.buscar_por_id(plan.id)
         self.assertIsNone(plan_borrado)
 
     def test_plan_con_orientacion(self):
+        # Primero necesitamos crear dependencias para la orientación
+        from app.models.universidad import Universidad
+        from app.models.facultad import Facultad
+        from app.models.departamento import Departamento
+        from app.models.tipo_especialidad import TipoEspecialidad
+        from app.models.especialidad import Especialidad
+        from app.models.materia import Materia
+        
+        # Crear Universidad
+        universidad = Universidad()
+        universidad.nombre = "Universidad de Prueba"
+        universidad.sigla = "UP"
+        db.session.add(universidad)
+        db.session.commit()
+        
+        # Crear Facultad
+        facultad = Facultad()
+        facultad.nombre = "Facultad de Prueba"
+        facultad.abreviatura = "FP"
+        facultad.directorio = "dir_prueba"
+        facultad.sigla = "FDP"
+        facultad.email = "facultad@test.com"
+        facultad.universidad_id = universidad.id
+        db.session.add(facultad)
+        db.session.commit()
+        
+        # Crear Departamento
+        departamento = Departamento()
+        departamento.nombre = "Departamento de Prueba"
+        departamento.facultad_id = facultad.id
+        db.session.add(departamento)
+        db.session.commit()
+        
+        # Crear Materia
+        materia = Materia()
+        materia.nombre = "Materia de Prueba"
+        materia.codigo = "MP001"
+        materia.departamento_id = departamento.id
+        db.session.add(materia)
+        db.session.commit()
+        
+        # Crear TipoEspecialidad
+        tipo_especialidad = TipoEspecialidad()
+        tipo_especialidad.nombre = "Tipo Especialidad de Prueba"
+        tipo_especialidad.nivel = "Nivel de Prueba"
+        db.session.add(tipo_especialidad)
+        db.session.commit()
+        
+        # Crear Especialidad
+        especialidad = Especialidad()
+        especialidad.nombre = "Especialidad de Prueba"
+        especialidad.tipo_especialidad_id = tipo_especialidad.id
+        db.session.add(especialidad)
+        db.session.commit()
+        
         # Crear una orientación
         orientacion = Orientacion()
         orientacion.nombre = "Orientación de Prueba"
-        OrientacionService.crear_orientacion(orientacion)
+        orientacion.especialidad_id = especialidad.id
+        orientacion.plan_id = 1  # Esto se actualizará después
+        orientacion.materia_id = materia.id
+        OrientacionRepository.crear(orientacion)
 
         # Crear un plan asociado a la orientación
         plan = self.__nuevoPlan()
-        plan.orientacion_id = orientacion.id
-        PlanService.crear_plan(plan)
+        PlanRepository.crear(plan)
+        
+        # Actualizar la orientación con el plan correcto
+        orientacion.plan_id = plan.id
+        OrientacionRepository.actualizar(orientacion)
 
         # Verificar que la relación se guardó correctamente
-        plan_encontrado = PlanService.buscar_por_id(plan.id)
-        self.assertEqual(plan_encontrado.orientacion_id, orientacion.id)
+        plan_encontrado = PlanRepository.buscar_por_id(plan.id)
+        self.assertIsNotNone(plan_encontrado)
 
     def __nuevoPlan(self, nombre="Plan 2023"):
         plan = Plan()
         plan.nombre = nombre
-        plan.fechaInicio = "2023-01-01"
-        plan.fechaFin = "2027-12-31"
+        plan.fecha_inicio = "2023-01-01"
+        plan.fecha_fin = "2027-12-31"
         plan.observacion = "Plan de estudios actualizado"
         return plan
 

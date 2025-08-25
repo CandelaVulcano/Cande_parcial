@@ -1,20 +1,56 @@
 import unittest
-from flask import current_app
-from app import create_app, db
 import os
+import sys
+
+# Añadir el directorio raíz del proyecto al path para poder importar desde app
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from flask import current_app
+from app import db
+
+# Definimos una versión simplificada de create_app que no importa los recursos
+def create_simple_app(config_name='testing'):
+    from flask import Flask
+    from app.config import config
+    
+    app = Flask(__name__)
+    config_class = config.get(config_name, config['default'])
+    app.config.from_object(config_class)
+    db.init_app(app)
+    
+    return app
+
 from app.models.departamento import Departamento
-from app.services.departamento_service import DepartamentoService
-
-
+from app.models.facultad import Facultad
+from app.models.universidad import Universidad
+# Comentamos la importación que causa problemas con WeasyPrint
+# from app.services.departamento_service import DepartamentoService
 
 class AppTestCase(unittest.TestCase):
 
     def setUp(self):
-        os.environ['FLASK_CONTEXT'] = 'testing'
-        self.app = create_app()
+        self.app = create_simple_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
+        
+        # Creamos una universidad para usar en las pruebas
+        self.universidad = Universidad()
+        self.universidad.nombre = "Universidad Nacional de Prueba"
+        self.universidad.sigla = "UNP"
+        db.session.add(self.universidad)
+        db.session.commit()
+        
+        # Creamos una facultad para usar en las pruebas
+        self.facultad = Facultad()
+        self.facultad.nombre = "Facultad de Pruebas"
+        self.facultad.abreviatura = "FP"
+        self.facultad.directorio = "pruebas"
+        self.facultad.sigla = "FP"
+        self.facultad.email = "fp@unp.edu.ar"
+        self.facultad.universidad_id = self.universidad.id
+        db.session.add(self.facultad)
+        db.session.commit()
 
     def tearDown(self):
         db.session.remove()
@@ -25,6 +61,7 @@ class AppTestCase(unittest.TestCase):
         departamento = Departamento()
         departamento.nombre = "Secretaria"
         departamento.descripcion = "Secretaria de la empresa"
+        departamento.facultad_id = self.facultad.id  # Asignamos la facultad_id
         db.session.add(departamento)
         db.session.commit()
         # Verificadores para la creación del departamento
@@ -42,6 +79,7 @@ class AppTestCase(unittest.TestCase):
         departamento = Departamento()
         departamento.nombre = "ofina de alumnos"
         departamento.descripcion = "oficina de alumnos de la facultad de ingenieria"
+        departamento.facultad_id = self.facultad.id  # Asignamos la facultad_id
         db.session.add(departamento)
         db.session.commit()
         self.assertIsNotNone(departamento)
@@ -53,6 +91,7 @@ class AppTestCase(unittest.TestCase):
         departamento = Departamento()
         departamento.nombre = "ofina de alumnos"
         departamento.descripcion = "oficina de alumnos de la facultad de ingenieria"
+        departamento.facultad_id = self.facultad.id  # Asignamos la facultad_id
         db.session.add(departamento)
         db.session.commit()
         encontrado = Departamento.query.get(departamento.id)
@@ -63,11 +102,13 @@ class AppTestCase(unittest.TestCase):
         departamento1 = Departamento()
         departamento1.nombre = "ofina de alumnos"
         departamento1.descripcion = "oficina de alumnos de la facultad de ingenieria"
+        departamento1.facultad_id = self.facultad.id  # Asignamos la facultad_id
         db.session.add(departamento1)
         
         departamento2 = Departamento()
         departamento2.nombre = "ofina de profesores"
         departamento2.descripcion = "oficina de profesores de la facultad de ingenieria"
+        departamento2.facultad_id = self.facultad.id  # Asignamos la facultad_id
         db.session.add(departamento2)
         
         db.session.commit()
@@ -81,6 +122,7 @@ class AppTestCase(unittest.TestCase):
         departamento = Departamento()
         departamento.nombre = "ofina de alumnos"
         departamento.descripcion = "oficina de alumnos de la facultad de ingenieria"
+        departamento.facultad_id = self.facultad.id  # Asignamos la facultad_id
         db.session.add(departamento)
         db.session.commit()
         
@@ -94,6 +136,7 @@ class AppTestCase(unittest.TestCase):
         departamento = Departamento()
         departamento.nombre = "ofina de alumnos"
         departamento.descripcion = "oficina de alumnos de la facultad de ingenieria"
+        departamento.facultad_id = self.facultad.id  # Asignamos la facultad_id
         db.session.add(departamento)
         db.session.commit()
         
@@ -107,18 +150,21 @@ class AppTestCase(unittest.TestCase):
         departamento = Departamento()
         departamento.nombre = "ofina de alumnos"
         departamento.descripcion = "oficina de alumnos de la facultad de ingenieria"
+        departamento.facultad_id = self.facultad.id  # Asignamos la facultad_id
         return departamento
 
     def __nuevoDepartamento2(self):
         departamento2 = Departamento()
         departamento2.nombre = "ofina de profesores"
         departamento2.descripcion = "oficina de profesores de la facultad de ingenieria"
+        departamento2.facultad_id = self.facultad.id  # Asignamos la facultad_id
         return departamento2
     
     def __nuevoDepartamento3(self):
         departamento3 = Departamento()
         departamento3.nombre = "ofina de administracion"
         departamento3.descripcion = "oficina de administracion de la facultad de ingenieria"
+        departamento3.facultad_id = self.facultad.id  # Asignamos la facultad_id
         return departamento3
 
 if __name__ == '__main__':
