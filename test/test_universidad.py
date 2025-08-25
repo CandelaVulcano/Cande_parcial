@@ -2,10 +2,8 @@ import unittest
 import os
 import sys
 
-# Añadir el directorio raíz del proyecto al path para poder importar desde app
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Definimos una versión simplificada de create_app que no importa los recursos
 def create_simple_app(config_name='testing'):
     from flask import Flask
     from app.config import config
@@ -15,7 +13,6 @@ def create_simple_app(config_name='testing'):
     app.config.from_object(config_class)
     from app import db
     db.init_app(app)
-    
     return app
 
 from flask import current_app
@@ -25,7 +22,6 @@ from app.repositories.universidad_repositorio import UniversidadRepository
 from app import db
 
 class UniversidadTestCase(unittest.TestCase):
-
     def setUp(self):
         os.environ['FLASK_CONTEXT'] = 'testing'
         self.app = create_simple_app('testing')
@@ -83,12 +79,10 @@ class UniversidadTestCase(unittest.TestCase):
         universidad = self.__nuevaUniversidad()
         UniversidadRepository.crear(universidad)
         
-        # Antes de eliminar la universidad, necesitamos eliminar las facultades asociadas
         for facultad in universidad.facultades:
             db.session.delete(facultad)
         db.session.commit()
         
-        # Ahora podemos eliminar la universidad
         UniversidadRepository.borrar_por_id(universidad.id)
         universidad_borrada = UniversidadRepository.buscar_por_id(universidad.id)
         self.assertIsNone(universidad_borrada)
@@ -99,16 +93,14 @@ class UniversidadTestCase(unittest.TestCase):
         universidad.sigla = "UNLP"
         
         db.session.add(universidad)
-        db.session.flush()  # Asigna un ID a la universidad sin hacer commit
+        db.session.flush()
         
         facultad1 = self.__nuevafacultad()
         facultad2 = self.__nuevafacultad2()
         
-        # Asignar la universidad_id a las facultades
         facultad1.universidad_id = universidad.id
         facultad2.universidad_id = universidad.id
         
-        # Agregar las facultades a la relación
         universidad.facultades.append(facultad1)
         universidad.facultades.append(facultad2)
         
