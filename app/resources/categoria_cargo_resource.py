@@ -42,14 +42,6 @@ def update(id: int):
     
     return categoria_cargo_mapping.dump(categoria_cargo_actualizado), 200
 
-    def test_borrar_grado(self):
-        grado = self.__nuevoGrado()
-        GradoService.crear_grado(grado)
-        resultado = GradoService.borrar_grado(grado.id)
-        self.assertTrue(resultado)
-        grado_buscado = GradoService.buscar_por_id(grado.id)
-        self.assertIsNone(grado_buscado)
-
 @categoria_cargo_bp.route('/categoria_cargo/<hashid:id>', methods=['DELETE'])
 def delete(id: int):
     eliminado = CategoriaCargoService.borrar_categoria_cargo(id)
