@@ -72,3 +72,4 @@ TDD y SOLID
 
 La metodología TDD consiste en primero desarrollar los test y después crear el producto mínimo que los logre aprobar, la idea es desarrollar ese prototipo y después ir refactorizando el código. Conforme el código va evolucionando si en algún momento deja de pasar los test tendremos una idea más aproximada de cuando sucedió el error. Considero que los principios SOLID son usados a la hora de ir refactorizando el código para que no dejen de pasar los test.
 
+PERDON PROFE POR LAS MOLESTIAS
