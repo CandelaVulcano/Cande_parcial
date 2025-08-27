@@ -1,0 +1,74 @@
+KISS
+
+En nuestros repositorios (y en general, models, services) tratamos de usar una estructura simple y que no sea difícil de leer y tampoco aplicamos sobreingenieria (crear soluciones a problemas en los que ya hay funciones que los resuelven) por lo que considero que se aplico el principio de KISS, se puede ver eso en la linea: return db.session,query(Grado).filter_by(id=id).first()
+
+DRY 
+Principios DRY, KISS, YAGNI
+
+Analiza el proyecto que asignado en la primer pregunta en GIT y evalúa si cumple con los principios de KISS y DRY y YAGNI.
+Justifica tu respuesta y en caso de corresponder realizar refactorizaciones que sean necesarias.
+En qué parte del proyecto es necesario aplicar los principios SOLID.
+Justifica tu respuesta agregando las modificaciones necesaria al proyecto a través de una issue/tarea y asignar en el mensaje del commit el número.
+Este principio esta aplicado al tener funciones que realizan acciones especificas asi no es necesario reescribir esos fragmentos de código cada que se quiera lograr cierto objetivo.
+
+YAGNI
+
+Considero que se cumplió ya que solo implementamos funciones que serán usadas que son las operaciones de CRUD. No considero que hayan mas funciones de las necesarias o que no se usen.
+
+
+
+Los principios SOLID deberían ser usados en todo el proyecto.
+
+S - Única responsabilidad
+
+Una clase debe tener una única responsabilidad para cambiar, un único tipo de lógica
+
+Ejemplo: la clase AlumnoService contiene solo la lógica de alumno
+
+O - Opend/Closed
+
+Las clases deben estar abiertas para extenderse pero cerradas a modificarse
+
+Ejemplo: la clase AlumnoService puede adquirir nuevas funcionalidades sin necesidad de modificar las que ya tiene
+
+L - Liskon
+
+Las clases hijos pueden hacer las mismas funcionalidades que las clases padres sin problemas
+
+Como la clase PDF tiene las mismas funciones que su padre DOCUMENT
+
+I - Segregación de Interfaces
+
+No obligues a las clases a implementar métodos que no usan.
+
+Como creo que cumplimos con YAGNI abarca también que cumplimos con este inciso.
+
+D - Inversión de Dependencias
+
+No dependas de clases concretas, sino de abstracciones.
+
+
+Programa una nueva funcionalidad que devuelva una vista en formato PDF y JSON de la Ficha del Alumno (Nro de Legajo, Apellido y Nombre, etc. Facultad donde se encuentra registrado). Se tendrá encuentra para la puntuación como se aplicaron los Principios SOLID. (Crear una issue/tarea y asignar en el mensaje del commit el número
+ESTA EN RESOURCE parcial.proyecto
+
+
+Organización del Código
+
+¿Qué organización de código tiene el proyecto? ¿Qué ventajas y desventajas tiene?
+
+El tipo de organización de este proyecto es una arquitectura por capas por roles tecnológicos, se puede notar al ver que hay un archivo para todos los models, otro para todos los services, otro para todos los repositorios y asi.
+
+Ventajas:
+
+Fácil para principiantes, reutilizable, especialización técnica
+
+Desventajas:
+
+Mala escalabilidad, dificulta la comprensión, mantenimiento de funcionalidades al estar dispersas en varias capas.
+
+
+TDD y SOLID
+¿Cómo relacionaste en tu proyecto TDD con los principios SOLID?. Justificar respuesta agregando archivo/s Línea de código
+
+La metodología TDD consiste en primero desarrollar los test y después crear el producto mínimo que los logre aprobar, la idea es desarrollar ese prototipo y después ir refactorizando el código. Conforme el código va evolucionando si en algún momento deja de pasar los test tendremos una idea más aproximada de cuando sucedió el error. Considero que los principios SOLID son usados a la hora de ir refactorizando el código para que no dejen de pasar los test.
+
